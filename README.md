@@ -1,2 +1,3 @@
 # Project2
-Mine Sweeper
+Mine Sweeper.
+Testing
