@@ -6,6 +6,7 @@ class MyJButton extends JButton
 {
   private int row;
   private int col;
+  private String name;
   
   public void setNumber (int r, int c)
   {
@@ -20,5 +21,13 @@ class MyJButton extends JButton
   
   public int getCol(){
     return col;
+  }
+  
+  public void setName(String n){
+    name = n;
+  }
+  
+  public String getName(){
+    return name;
   }
 }

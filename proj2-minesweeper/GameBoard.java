@@ -2,10 +2,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class GameBoard extends JFrame implements ActionListener{
+public class GameBoard extends JFrame{
   private Container container = new Container();
   private MyJButton[][] button = new MyJButton[10][10];
   private int i, j;
+  private int state = 0;
   //Menu
   private JMenuBar menuBar;
   private JMenu gameMenu, helpMenu;
@@ -23,7 +24,21 @@ public class GameBoard extends JFrame implements ActionListener{
   private JPanel resetPanel = new JPanel();
   private JPanel timePanel = new JPanel();
   //Other buttons
-  private Button resetButton;
+  private JButton resetButton;
+  private JLabel timerLLabel, timerMLabel, timerRLabel;
+  private JLabel mineLLabel, mineMLabel, mineRLabel;
+  //Images
+  private ImageIcon smileButton = new ImageIcon("images/smile_button.gif");
+  private ImageIcon smileButtonPressed = new ImageIcon("images/smile_button_pressed.gif");
+  private ImageIcon headO = new ImageIcon("images/head_o.gif");
+  private ImageIcon bombPressed = new ImageIcon("images/button_bomb_pressed.gif");
+  private ImageIcon buttonPressed = new ImageIcon("images/button_pressed.gif");
+  private ImageIcon iconArray[];
+  private ImageIcon rightClickArray[];
+  private ImageIcon numberArray[];
+  //Timer
+  private Timer timeClock;
+  private int timeCount;
   
   public GameBoard(){
     //Window Title
@@ -32,6 +47,8 @@ public class GameBoard extends JFrame implements ActionListener{
     //Set up grid and top section
     mainPanel.setLayout(new BorderLayout());
     gridPanel.setLayout(new GridLayout(10,10));
+    timePanel.setLayout(new BorderLayout());
+    minePanel.setLayout(new BorderLayout());
     mainPanel.add(topPanel, BorderLayout.NORTH);
     mainPanel.add(gridPanel,BorderLayout.CENTER);
     //Split top section into three parts
@@ -41,21 +58,53 @@ public class GameBoard extends JFrame implements ActionListener{
     topPanel.add(timePanel, BorderLayout.EAST);
     
     //Reset Button
-    resetButton = new Button("Reset");
+    resetButton = new JButton(smileButton);
     resetButton.setName("reset");
+    resetButton.setBorder(null);
     resetPanel.add(resetButton);
-    resetButton.addActionListener(new ResetHandler());
+    resetButton.addMouseListener(new ResetHandler());
     
-    //------------TESTING-----------------
-    Button mineButton = new Button("Mine");
-    Button timeButton = new Button("Time");
-    minePanel.add(mineButton);
-    timePanel.add(timeButton);
+    //Number Array Images (array index stored 1 less than actual number)
+    String numName[] = {"images/button_1.gif","images/button_2.gif","images/button_3.gif","images/button_4.gif",
+                        "images/button_5.gif","images/button_6.gif","images/button_7.gif","images/button_8.gif"};
+    numberArray = new ImageIcon[numName.length];
+    for(i = 0; i < numName.length; i++){
+      numberArray[i] = new ImageIcon(numName[i]);
+    }
     
-    //Set up content pane and its layout
-    //container = getContentPane();
-    //container.setLayout(gameBoard);
+    //Right Click Images
+    String iconName[] = {"images/button_normal.gif","images/button_flag.gif","images/button_question.gif"};
+    rightClickArray = new ImageIcon[iconName.length];
+    for(i = 0; i < iconName.length; i++){
+      rightClickArray[i] = new ImageIcon(iconName[i]);
+    }
     
+    //Timer Image Icons
+    String names[] = {"images/countdown_0.gif","images/countdown_1.gif","images/countdown_2.gif","images/countdown_3.gif",
+                      "images/countdown_4.gif", "images/countdown_5.gif","images/countdown_6.gif","images/countdown_7.gif",
+                      "images/countdown_8.gif","images/countdown_9.gif"};
+    iconArray = new ImageIcon[names.length];
+    for(i = 0; i < names.length; i++){
+      iconArray[i] = new ImageIcon(names[i]);
+    }
+    
+    //Timer Label
+    timerLLabel = new JLabel(iconArray[0]);
+    timerMLabel = new JLabel(iconArray[0]);
+    timerRLabel = new JLabel(iconArray[0]);
+    timePanel.add(timerLLabel,BorderLayout.EAST);
+    timePanel.add(timerMLabel,BorderLayout.CENTER);
+    timePanel.add(timerRLabel,BorderLayout.WEST);
+    //Start the timer
+    
+    //Mine Label
+    mineLLabel = new JLabel(iconArray[0]);
+    mineMLabel = new JLabel(iconArray[0]);
+    mineRLabel = new JLabel(iconArray[0]);
+    minePanel.add(mineLLabel,BorderLayout.EAST);
+    minePanel.add(mineMLabel,BorderLayout.CENTER);
+    minePanel.add(mineRLabel,BorderLayout.WEST);
+
     //Set up the menu bar
     menuBar = new JMenuBar();
     gameMenu = new JMenu("Game");
@@ -64,8 +113,10 @@ public class GameBoard extends JFrame implements ActionListener{
     scoreMenu = new JMenuItem("Top Ten");
     exitMenu = new JMenuItem("Exit");
     exitMenu.addActionListener(new ExitHandler());
+    exitMenu.setMnemonic(KeyEvent.VK_X);
     helpSubMenu = new JMenuItem("Help");
     helpSubMenu.addActionListener(new HelpHandler());
+    helpSubMenu.setMnemonic(KeyEvent.VK_L);
     aboutMenu = new JMenuItem("About");
     aboutMenu.addActionListener(new AboutHandler());
     menuBar.add(gameMenu);
@@ -81,38 +132,62 @@ public class GameBoard extends JFrame implements ActionListener{
     for(i=0; i<10; i++){
       for(j=0; j<10; j++){
         button[i][j] = new MyJButton();
+        button[i][j].setIcon(rightClickArray[0]);
         button[i][j].setNumber(i,j);
-        button[i][j].setPreferredSize(new Dimension(2,2));
-        //button[i][j].addMouseListener(new MouseClickHandler());
-        button[i][j].addActionListener(this);
-        //container.add(button[i][j]);
+        button[i][j].setState(0);  //State of the right click
+        button[i][j].setBomb(0);  //Initialize bomb state to normal (no bomb)
+        button[i][j].setBorder(null);
+        button[i][j].setFocusable(false);
+        button[i][j].setContentAreaFilled(false);
+        button[i][j].addMouseListener(new MouseClickHandler());
+        button[i][j].addActionListener(new ButtonHandler());
         gridPanel.add(button[i][j]);
       }
     }
     
+    //Add mine
+    randomizeBomb();
+    
     //Set window size and display it
     add(mainPanel);  //add main panel to frame
-    setSize(500,500);
+    setSize(185,275);
+    setResizable(false);  //disable window resizing
     setVisible(true);
     setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
   }  //End of constructor
   
   //------------------ACTION-HANDLERS-------------------------
-  //Handle what the button will do when pressed
-  public void actionPerformed(ActionEvent event){
-    MyJButton temp = (MyJButton) event.getSource();
-    int row = temp.getRow();
-    int col = temp.getCol();
-    button[row][col].setEnabled(false);
-    JOptionPane.showMessageDialog(this, "you pressed: " + row + "," + col);
+  //Handle what the button(game button) will do when pressed
+  private class ButtonHandler implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      MyJButton temp = (MyJButton) event.getSource();
+      //temp.setEnabled(false);
+      
+      //Bomb Space
+      if(temp.getBomb() == 1){
+        temp.setIcon(bombPressed);
+      }
+      //Number or normal Space
+      else{
+        //Check adjacent space around clicked location
+        addNumber(temp.getRow(), temp.getCol());
+        
+        //temp.setIcon(buttonPressed);
+      }
+    }
   }
   
   //Reset button handler
-  private class ResetHandler implements ActionListener{
-    public void actionPerformed(ActionEvent event){
-      Button temp = (Button) event.getSource();
-      resetButton.setEnabled(false);
-      JOptionPane.showMessageDialog(null, "you pressed: reset");
+  private class ResetHandler extends MouseAdapter{
+    public void mousePressed(MouseEvent event){
+      //JButton temp = (JButton) event.getSource();
+      resetButton.setIcon(smileButtonPressed);
+      //resetButton.setEnabled(false);
+      //JOptionPane.showMessageDialog(null, "you pressed: reset");  
+    }
+    public void mouseReleased(MouseEvent event){
+      //JButton temp = (JButton) event.getSource();
+      resetButton.setIcon(smileButton);
     }
   }
   
@@ -147,15 +222,114 @@ public class GameBoard extends JFrame implements ActionListener{
     }
   }
   
-  //Handle what the button will do with different mouse click
+  //Handle what the button(on grid) will do with different mouse click
   private class MouseClickHandler extends MouseAdapter{
-    public void mouseClicked (MouseEvent e){
-      if (SwingUtilities.isLeftMouseButton(e)){
-        
+    //Pressed State
+    public void mousePressed(MouseEvent event){
+      MyJButton temp = (MyJButton) event.getSource();
+      if(SwingUtilities.isRightMouseButton(event)){  //Right Click
+        if(temp.isEnabled() == true){  //Can only right click if square is still enabled
+          state = temp.getState();
+          state++;
+          temp.setState(state);
+          //Restart back to default state
+          if(state > 2){
+            temp.setState(0);
+            state = 0;
+          }
+          temp.setIcon(rightClickArray[temp.getState()]);
+        }
       }
+      else{  //left click
+        resetButton.setIcon(headO);
+      }
+    }
+    //Released State
+    public void mouseReleased(MouseEvent event){
+      resetButton.setIcon(smileButton);
     }
   }
   //------------------------------------------------------------
+  
+  //Randomize Bomb Location
+  public void randomizeBomb(){
+    int mineCount = 10;
+    while(mineCount != 0){
+      int randX = (int)(Math.random() * 10);  //Random number from 0-9
+      int randY = (int)(Math.random() * 10);
+      
+      if(button[randX][randY].getBomb() == 0){
+        button[randX][randY].setBomb(1);
+        mineCount--;
+      }
+    }
+  }
+  
+  //Add number
+  public void addNumber(int row, int col){
+    int mineCount = 0;
+    int downRow = row - 1;
+    int upRow = row + 1;
+    int downCol = col -1;
+    int upCol = col + 1;
+    
+    //Northeast
+    if(downRow > 0 && downCol > 0){
+      if(button[downRow][downCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //North
+    if(downRow > 0){
+      if(button[downRow][col].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //Northwest
+    if(downRow > 0 && upCol < 10){
+      if(button[downRow][upCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //West
+    if(downCol > 0){
+      if(button[row][downCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //East
+    if(upCol < 10){
+      if(button[row][upCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //Southeast
+    if(upRow < 10 && downCol > 0){
+      if(button[upRow][downCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //South
+    if(upRow < 10){
+      if(button[upRow][col].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    //Southwest
+    if(upRow < 10 && upCol < 10){
+      if(button[upRow][upCol].getBomb() == 1){
+        mineCount++;
+      }
+    }
+    
+    //Set number on space
+    if(mineCount > 0){  //Number space
+      button[row][col].setIcon(numberArray[mineCount-1]);
+    }
+    else{  //Empty space
+      button[row][col].setIcon(buttonPressed);
+    }
+  }
   
 }  //End of class GameBoard
 
