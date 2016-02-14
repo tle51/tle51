@@ -18,7 +18,7 @@ class MyJButton extends JButton
     return row;
   }
   
-  pubic int getCol(){
+  public int getCol(){
     return col;
   }
 }

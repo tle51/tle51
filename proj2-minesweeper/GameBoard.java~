@@ -2,65 +2,96 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-//@SuppressWarnings("serial")
-public class GameBoard extends JFrame{
- private GridLayout gameBoard;
- private Container container = new Container();
- private JButton[][] button = new JButton[10][10];
- private int i, j;
- 
- public GameBoard(){
-  super("Mine Sweeper");
+public class GameBoard extends JFrame implements ActionListener{
+  private Container container = new Container();
+  private MyJButton[][] button = new MyJButton[10][10];
+  private int i, j;
+  //Menu
+  private JMenuBar menuBar;
+  private JMenu gameMenu, helpMenu;
+  private JMenuItem menuItem;
+  //Panels
+  private JPanel mainPanel = new JPanel();
+  private JPanel topPanel = new JPanel();
+  private JPanel gridPanel = new JPanel();
+  //Timer panel
+  private JPanel minePanel = new JPanel();
+  private JPanel resetPanel = new JPanel();
+  private JPanel timePanel = new JPanel();
   
-  //Set up game board
-  gameBoard = new GridLayout(10,10);
   
-  //Set up content pane and its layout
-  container = getContentPane();
-  container.setLayout(gameBoard);
-  setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-  
-  //Set up buttons
-  for(i=0; i<10; i++){
-   for(j=0; j<10; j++){
-    button[i][j] = new JButton();
-    button[i][j].setPreferredSize(new Dimension(2,2));
-    container.add(button[i][j]);
-   }
+  public GameBoard(){
+    //Window Title
+    super("Mine Sweeper");
+    
+    //Set up grid and top section
+    mainPanel.setLayout(new BorderLayout());
+    gridPanel.setLayout(new GridLayout(10,10));
+    mainPanel.add(topPanel, BorderLayout.NORTH);
+    mainPanel.add(gridPanel,BorderLayout.CENTER);
+    //Split top section into three parts
+    topPanel.setLayout(new BorderLayout());
+    topPanel.add(minePanel, BorderLayout.WEST);
+    topPanel.add(resetPanel, BorderLayout.CENTER);
+    topPanel.add(timePanel, BorderLayout.EAST);
+    
+    //------------TESTING-----------------
+    Button resetButton = new Button("Reset");
+    resetPanel.add(resetButton);
+    Button mineButton = new Button("Mine");
+    Button timeButton = new Button("Time");
+    minePanel.add(mineButton);
+    timePanel.add(timeButton);
+    
+    //Set up content pane and its layout
+    //container = getContentPane();
+    //container.setLayout(gameBoard);
+    
+    //Set up the menu bar
+    menuBar = new JMenuBar();
+    gameMenu = new JMenu("Game");
+    helpMenu = new JMenu("Help");
+    menuBar.add(gameMenu);
+    menuBar.add(helpMenu);
+    setJMenuBar(menuBar);
+    
+    //Set up buttons
+    for(i=0; i<10; i++){
+      for(j=0; j<10; j++){
+        button[i][j] = new MyJButton();
+        button[i][j].setNumber(i,j);
+        button[i][j].setPreferredSize(new Dimension(2,2));
+        //button[i][j].addMouseListener(new MouseClickHandler());
+        button[i][j].addActionListener(this);
+        //container.add(button[i][j]);
+        gridPanel.add(button[i][j]);
+      }
+    }
+    
+    //Set window size and display it
+    add(mainPanel);  //add main panel to frame
+    setSize(500,500);
+    setVisible(true);
+    setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
   }
   
-  
-  //Set window size and display it
-  setSize(500,500);
-  setVisible(true);
- }
- 
- private class ButtonHandler implements ActionListener{
+  //Handle what the button will do when pressed
   public void actionPerformed(ActionEvent event){
-   //
+    MyJButton temp = (MyJButton) event.getSource();
+    int row = temp.getRow();
+    int col = temp.getCol();
+    button[row][col].setEnabled(false);
+    JOptionPane.showMessageDialog(this, "you pressed: " + row + "," + col);
   }
- }
+  
+  //Handle what the button will do with different mouse click
+  private class MouseClickHandler extends MouseAdapter{
+    public void mouseClicked (MouseEvent e){
+      if (SwingUtilities.isLeftMouseButton(e)){
+        
+      }
+    }
+  }
+  
 }  //End of class GameBoard
 
-class MyJButton extends JButton{
- private int row;
- private int col;
- 
- public MyJButton(int r, int c){
-  row = r;
-  col = c;
- }
- 
- public void setNumber(int r, int c){
-  row = r;
-  col = c;
- }
- 
- public int getRow(){
-  return row;
- }
- 
- public int getCol(){
-  return col;
- }
-}
