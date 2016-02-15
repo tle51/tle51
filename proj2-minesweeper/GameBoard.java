@@ -136,6 +136,8 @@ public class GameBoard extends JFrame{
         button[i][j].setNumber(i,j);
         button[i][j].setState(0);  //State of the right click
         button[i][j].setBomb(0);  //Initialize bomb state to normal (no bomb)
+        button[i][j].setEnable(1);  //Enabled button
+        button[i][j].setLeftClick(1);  //enable left clicking
         button[i][j].setBorder(null);
         button[i][j].setFocusable(false);
         button[i][j].setContentAreaFilled(false);
@@ -157,7 +159,7 @@ public class GameBoard extends JFrame{
   }  //End of constructor
   
   //------------------ACTION-HANDLERS-------------------------
-  //Handle what the button(game button) will do when pressed
+  //Handle what the button(game button) will do when pressed [ANYTHING TO DO WITH THE GRID SQUARE]
   private class ButtonHandler implements ActionListener{
     public void actionPerformed(ActionEvent event){
       MyJButton temp = (MyJButton) event.getSource();
@@ -165,14 +167,15 @@ public class GameBoard extends JFrame{
       
       //Bomb Space
       if(temp.getBomb() == 1){
+        button[temp.getRow()][temp.getCol()].setEnable(0);
         temp.setIcon(bombPressed);
       }
-      //Number or normal Space
+      //Number or normal Space (left clicking)
       else{
         //Check adjacent space around clicked location
-        addNumber(temp.getRow(), temp.getCol());
-        
-        //temp.setIcon(buttonPressed);
+        if(temp.getLeftClick() == 1){
+          addNumber(temp.getRow(), temp.getCol());
+        }
       }
     }
   }
@@ -222,13 +225,14 @@ public class GameBoard extends JFrame{
     }
   }
   
-  //Handle what the button(on grid) will do with different mouse click
+  //Handle what the button(on grid) will do with different mouse click [RIGHT CLICK]
   private class MouseClickHandler extends MouseAdapter{
     //Pressed State
     public void mousePressed(MouseEvent event){
       MyJButton temp = (MyJButton) event.getSource();
-      if(SwingUtilities.isRightMouseButton(event)){  //Right Click
-        if(temp.isEnabled() == true){  //Can only right click if square is still enabled
+      //Right Clicking
+      if(SwingUtilities.isRightMouseButton(event)){  
+        if(temp.getEnable() == 1){  //Can only right click if square is still enabled
           state = temp.getState();
           state++;
           temp.setState(state);
@@ -236,8 +240,13 @@ public class GameBoard extends JFrame{
           if(state > 2){
             temp.setState(0);
             state = 0;
+            button[temp.getRow()][temp.getCol()].setLeftClick(1);
+            temp.setIcon(rightClickArray[temp.getState()]);
           }
-          temp.setIcon(rightClickArray[temp.getState()]);
+          else{
+            button[temp.getRow()][temp.getCol()].setLeftClick(0);
+            temp.setIcon(rightClickArray[temp.getState()]);
+          }
         }
       }
       else{  //left click
@@ -324,9 +333,11 @@ public class GameBoard extends JFrame{
     
     //Set number on space
     if(mineCount > 0){  //Number space
+      button[row][col].setEnable(0);
       button[row][col].setIcon(numberArray[mineCount-1]);
     }
     else{  //Empty space
+      button[row][col].setEnable(0);
       button[row][col].setIcon(buttonPressed);
     }
   }

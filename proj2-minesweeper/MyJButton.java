@@ -9,6 +9,8 @@ class MyJButton extends JButton
   private String name;
   private int state;
   private int bombState;  //1 - button have a bomb, 0 - no bomb
+  private int enableState;
+  private int leftClick;
   
   //Row and Column Info
   public void setNumber (int r, int c)
@@ -46,5 +48,21 @@ class MyJButton extends JButton
   }
   public int getBomb(){
     return bombState;
+  }
+  
+  //Enable-Disable State
+  public void setEnable(int i){
+    enableState = i;
+  }
+  public int getEnable(){
+    return enableState;
+  }
+  
+  //Left Click State
+  public void setLeftClick(int l){
+    leftClick = l;
+  }
+  public int getLeftClick(){
+    return leftClick;
   }
 }
