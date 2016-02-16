@@ -1,7 +1,7 @@
 /* Tan Le
  * CS 342
  * Programming Project 2 - MineSweeper
- * MyJButton Class
+ * MyJButton Class - Control the button states
  * */
 
 import java.awt.*;

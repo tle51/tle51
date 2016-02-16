@@ -1,7 +1,7 @@
 /* Tan Le
  * CS 342
  * Programming Project 2 - MineSweeper
- * GameBoard Class
+ * GameBoard Class - Set up the game board and include the function of the game
  * */
 
 import java.awt.*;
@@ -13,6 +13,7 @@ public class GameBoard extends JFrame{
   private MyJButton[][] button = new MyJButton[10][10];
   private int i, j;
   private int state = 0;
+  private int mineRemain = 10;  //Used for displaying mine label
   //Menu
   private JMenuBar menuBar;
   private JMenu gameMenu, helpMenu;
@@ -39,14 +40,13 @@ public class GameBoard extends JFrame{
   private ImageIcon headO = new ImageIcon("images/head_o.gif");
   private ImageIcon bombPressed = new ImageIcon("images/button_bomb_pressed.gif");
   private ImageIcon buttonPressed = new ImageIcon("images/button_pressed.gif");
+  private ImageIcon headGlasses = new ImageIcon("images/head_glasses.gif");
   private ImageIcon iconArray[];
   private ImageIcon rightClickArray[];
   private ImageIcon numberArray[];
   //Timer
   private Timer timeClock = new Timer(1000, new TimerHandler());
-  private int timeCount = 1;
-  //Win
-  private int winCount = 90;
+  private int timeCount = 0;  //timer
   
   public GameBoard(){
     //Window Title
@@ -118,7 +118,9 @@ public class GameBoard extends JFrame{
     gameMenu = new JMenu("Game");
     helpMenu = new JMenu("Help");
     resetMenu = new JMenuItem("Reset");
+    resetMenu.setMnemonic(KeyEvent.VK_R);
     scoreMenu = new JMenuItem("Top Ten");
+    scoreMenu.setMnemonic(KeyEvent.VK_T);
     exitMenu = new JMenuItem("Exit");
     exitMenu.addActionListener(new ExitHandler());
     exitMenu.setMnemonic(KeyEvent.VK_X);
@@ -127,6 +129,7 @@ public class GameBoard extends JFrame{
     helpSubMenu.setMnemonic(KeyEvent.VK_L);
     aboutMenu = new JMenuItem("About");
     aboutMenu.addActionListener(new AboutHandler());
+    aboutMenu.setMnemonic(KeyEvent.VK_A);
     menuBar.add(gameMenu);
     menuBar.add(helpMenu);
     gameMenu.add(resetMenu);
@@ -180,17 +183,28 @@ public class GameBoard extends JFrame{
       if(temp.getBomb() == 1 && temp.getLeftClick() == 1){
         button[temp.getRow()][temp.getCol()].setEnable(0);
         temp.setIcon(bombPressed);
+        
+//        //Check winning condition
+//        if(checkWin() == 1){
+//          JOptionPane.showMessageDialog(null, "You Win!"); 
+//          timeClock.stop();
+//        }
+        
       }
       //Number or normal Space (left clicking)
       else{
         //Check adjacent space around clicked location
         if(temp.getLeftClick() == 1){
-          addNumber(temp.getRow(), temp.getCol());
+          //addNumber(temp.getRow(), temp.getCol());
           autoClear(temp.getRow(), temp.getCol());
         }
       }
-      timerRLabel.setIcon(iconArray[1]);  //set label to 001
-      timeClock.start();  //start the timer
+      
+      //Start the clock
+      if(checkWin() == 0){
+        //timerRLabel.setIcon(iconArray[1]);  //set label to 001
+        timeClock.start();  //start the timer
+      }
     }
   }
   
@@ -204,7 +218,12 @@ public class GameBoard extends JFrame{
     }
     public void mouseReleased(MouseEvent event){
       //JButton temp = (JButton) event.getSource();
-      resetButton.setIcon(smileButton);
+      if(checkWin() == 0){
+        resetButton.setIcon(smileButton);
+      }
+      else{
+        resetButton.setIcon(headGlasses);
+      }
     }
   }
   
@@ -255,10 +274,12 @@ public class GameBoard extends JFrame{
             temp.setState(0);
             state = 0;
             button[temp.getRow()][temp.getCol()].setLeftClick(1);
+            //button[temp.getRow()][temp.getCol()].setNumber(0); //DFS - auto clear can clear this button
             temp.setIcon(rightClickArray[temp.getState()]);
           }
           else{
             button[temp.getRow()][temp.getCol()].setLeftClick(0);
+            //button[temp.getRow()][temp.getCol()].setNumber(1);  //DFS - auto clear can't clear this button (locked)
             temp.setIcon(rightClickArray[temp.getState()]);
           }
         }
@@ -269,7 +290,12 @@ public class GameBoard extends JFrame{
     }
     //Released State
     public void mouseReleased(MouseEvent event){
-      resetButton.setIcon(smileButton);
+      if(checkWin() == 0){
+        resetButton.setIcon(smileButton);
+      }
+      else{
+        resetButton.setIcon(headGlasses);
+      }
     }
   }
   
@@ -389,9 +415,16 @@ public class GameBoard extends JFrame{
       button[row][col].setEnable(0);
       button[row][col].setIcon(buttonPressed);
     }
+    
+    //Check winning condition
+    if(checkWin() == 1){  //won
+      //countingTime = 0;
+      timeClock.stop();
+      resetButton.setIcon(headGlasses);
+      JOptionPane.showMessageDialog(null, "You Win!\n" + "Time: " + timeCount);
+    }
+    
   }
-  
-  //Count and set flag non-mine space
   
   //Reset game
   
@@ -403,9 +436,7 @@ public class GameBoard extends JFrame{
     int downCol = col -1;
     int upCol = col + 1;
     
-    
-    
-    if(button[row][col].getVisited() == 0){
+    if(button[row][col].getVisited() == 0 && button[row][col].getLeftClick() == 1){
       if(button[row][col].getNumber() == 1){  //adjacent space have a bomb
         button[row][col].setVisited(1);
         addNumber(row,col);
@@ -461,10 +492,8 @@ public class GameBoard extends JFrame{
             autoClear(upRow, upCol);
           }
         }
-      }
-      
+      } 
     }
-    //button[row][col].setVisited(1);
   }
   
   //set number state
@@ -533,7 +562,25 @@ public class GameBoard extends JFrame{
     }
   }
   
+  //Check if any non-bomb spaces are left
+  public int checkWin(){
+    for(i=0;i<10;i++){
+      for(j=0;j<10;j++){
+        //Found a non-bomb button
+        if(button[i][j].getBomb() == 0){
+          if(button[i][j].getEnable() == 1){
+            return 0;
+          }
+        }
+      } 
+    }
+    return 1;  //all safe button are cleared -> winning condition
+  }
   
+  //Change the number of the mine counter label
+  public void countMineLabel(){
+    
+  }
   
   //Game end
   

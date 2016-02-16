@@ -14,11 +14,12 @@ class MyJButton extends JButton
   private int col;
   private String name;
   private int state;
-  private int bombState;  //1 - button have a bomb, 0 - no bomb
+  private int bombState = 0;  //1 - button have a bomb, 0 - no bomb
   private int enableState;
   private int leftClick;
   private int normalSpace;  //1 - non-mine state, 0 - mine?
-  private int visitedState;  //0 - not visited, 1 - in progres, 2 - visited
+  private int visitedState;  //0 - not visited, 1 - visited
+  private int numberState = 0;  //1 - a number
   
   //Row and Column Info
   public void setNumber (int r, int c)
@@ -86,8 +87,16 @@ class MyJButton extends JButton
   public void setVisited(int i){
     visitedState = i;
   }
-  public int returnVisited(){
+  public int getVisited(){
     return visitedState;
+  }
+  
+  //number state?
+  public void setNumber(int i){
+    numberState = i;
+  }
+  public int getNumber(){
+    return numberState;
   }
   
 }
