@@ -1,3 +1,9 @@
+/* Tan Le
+ * CS 342
+ * Programming Project 2 - MineSweeper
+ * Game Class
+ * */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

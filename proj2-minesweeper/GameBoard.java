@@ -1,3 +1,9 @@
+/* Tan Le
+ * CS 342
+ * Programming Project 2 - MineSweeper
+ * GameBoard Class
+ * */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -38,7 +44,7 @@ public class GameBoard extends JFrame{
   private ImageIcon numberArray[];
   //Timer
   private Timer timeClock;
-  private int timeCount;
+  private int timeCount = 0;
   
   public GameBoard(){
     //Window Title
@@ -175,6 +181,7 @@ public class GameBoard extends JFrame{
         //Check adjacent space around clicked location
         if(temp.getLeftClick() == 1){
           addNumber(temp.getRow(), temp.getCol());
+          //----Put Auto clear function here----
         }
       }
     }
@@ -258,6 +265,36 @@ public class GameBoard extends JFrame{
       resetButton.setIcon(smileButton);
     }
   }
+  
+  //Handler to count the time 
+  private class TimerHandler implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      String timeString;
+      int timeLength;
+      
+      timeCount++;
+      timeString = Integer.toString(timeCount);
+      timeLength = timeString.length();
+      
+      //Single digit
+      if(timeLength == 1){
+        timerRLabel.setIcon(iconArray[timeCount]);
+      }
+      else if(timeLength == 2){
+        //parse string
+      }
+      else if(timeLength == 3){
+        //If hit max time, stop the clock
+        if(timeCount == 999){
+          timeClock.stop();
+        }
+        else{
+        
+        }
+      }
+    }
+  }
+  
   //------------------------------------------------------------
   
   //Randomize Bomb Location
@@ -341,6 +378,25 @@ public class GameBoard extends JFrame{
       button[row][col].setIcon(buttonPressed);
     }
   }
+  
+  //Count and set flag non-mine space
+  
+  //Reset game
+  
+  //Auto clear (DFS)
+  public void autoClear(int row, int col){
+    int downRow = row - 1;
+    int upRow = row + 1;
+    int downCol = col -1;
+    int upCol = col + 1;
+    
+    if(downRow > 0 && downCol > 0 && upRow < 10 && upCol< 10){
+      
+    }
+       
+  }
+  
+  //Game end
   
 }  //End of class GameBoard
 

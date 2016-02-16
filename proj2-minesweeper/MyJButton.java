@@ -1,3 +1,9 @@
+/* Tan Le
+ * CS 342
+ * Programming Project 2 - MineSweeper
+ * MyJButton Class
+ * */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -11,6 +17,8 @@ class MyJButton extends JButton
   private int bombState;  //1 - button have a bomb, 0 - no bomb
   private int enableState;
   private int leftClick;
+  private int normalSpace;  //1 - non-mine state, 0 - mine?
+  private int visitedState;  //0 - not visited, 1 - in progres, 2 - visited
   
   //Row and Column Info
   public void setNumber (int r, int c)
@@ -65,4 +73,21 @@ class MyJButton extends JButton
   public int getLeftClick(){
     return leftClick;
   }
+  
+  //Non-mine space
+  public void setSpace(int i){
+    normalSpace = i;
+  }
+  public int getSpace(){
+    return normalSpace;
+  }
+  
+  //DFS Visited State
+  public void setVisited(int i){
+    visitedState = i;
+  }
+  public int returnVisited(){
+    return visitedState;
+  }
+  
 }
