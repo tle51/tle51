@@ -18,6 +18,7 @@ class MyJButton extends JButton
   private int enableState;
   private int leftClick;
   private int normalSpace;  //1 - non-mine state, 0 - mine?
+  private int visitedState;  //0 - not visited, 1 - in progres, 2 - visited
   
   //Row and Column Info
   public void setNumber (int r, int c)
@@ -79,6 +80,14 @@ class MyJButton extends JButton
   }
   public int getSpace(){
     return normalSpace;
+  }
+  
+  //DFS Visited State
+  public void setVisited(int i){
+    visitedState = i;
+  }
+  public int returnVisited(){
+    return visitedState;
   }
   
 }

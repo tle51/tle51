@@ -44,7 +44,7 @@ public class GameBoard extends JFrame{
   private ImageIcon numberArray[];
   //Timer
   private Timer timeClock;
-  private int timeCount;
+  private int timeCount = 0;
   
   public GameBoard(){
     //Window Title
@@ -265,6 +265,36 @@ public class GameBoard extends JFrame{
       resetButton.setIcon(smileButton);
     }
   }
+  
+  //Handler to count the time 
+  private class TimerHandler implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      String timeString;
+      int timeLength;
+      
+      timeCount++;
+      timeString = Integer.toString(timeCount);
+      timeLength = timeString.length();
+      
+      //Single digit
+      if(timeLength == 1){
+        timerRLabel.setIcon(iconArray[timeCount]);
+      }
+      else if(timeLength == 2){
+        //parse string
+      }
+      else if(timeLength == 3){
+        //If hit max time, stop the clock
+        if(timeCount == 999){
+          timeClock.stop();
+        }
+        else{
+        
+        }
+      }
+    }
+  }
+  
   //------------------------------------------------------------
   
   //Randomize Bomb Location

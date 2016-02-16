@@ -43,8 +43,10 @@ public class GameBoard extends JFrame{
   private ImageIcon rightClickArray[];
   private ImageIcon numberArray[];
   //Timer
-  private Timer timeClock;
-  private int timeCount = 0;
+  private Timer timeClock = new Timer(1000, new TimerHandler());
+  private int timeCount = 1;
+  //Win
+  private int winCount = 90;
   
   public GameBoard(){
     //Window Title
@@ -98,9 +100,9 @@ public class GameBoard extends JFrame{
     timerLLabel = new JLabel(iconArray[0]);
     timerMLabel = new JLabel(iconArray[0]);
     timerRLabel = new JLabel(iconArray[0]);
-    timePanel.add(timerLLabel,BorderLayout.EAST);
+    timePanel.add(timerLLabel,BorderLayout.WEST);
     timePanel.add(timerMLabel,BorderLayout.CENTER);
-    timePanel.add(timerRLabel,BorderLayout.WEST);
+    timePanel.add(timerRLabel,BorderLayout.EAST);
     //Start the timer
     
     //Mine Label
@@ -143,7 +145,9 @@ public class GameBoard extends JFrame{
         button[i][j].setState(0);  //State of the right click
         button[i][j].setBomb(0);  //Initialize bomb state to normal (no bomb)
         button[i][j].setEnable(1);  //Enabled button
-        button[i][j].setLeftClick(1);  //enable left clicking
+        button[i][j].setLeftClick(1);  //Enable left clicking
+        button[i][j].setVisited(0);  //Mark all button to unvisited
+        button[i][j].setNumber(0);
         button[i][j].setBorder(null);
         button[i][j].setFocusable(false);
         button[i][j].setContentAreaFilled(false);
@@ -155,6 +159,7 @@ public class GameBoard extends JFrame{
     
     //Add mine
     randomizeBomb();
+    setNumberState();
     
     //Set window size and display it
     add(mainPanel);  //add main panel to frame
@@ -172,7 +177,7 @@ public class GameBoard extends JFrame{
       //temp.setEnabled(false);
       
       //Bomb Space
-      if(temp.getBomb() == 1){
+      if(temp.getBomb() == 1 && temp.getLeftClick() == 1){
         button[temp.getRow()][temp.getCol()].setEnable(0);
         temp.setIcon(bombPressed);
       }
@@ -181,9 +186,11 @@ public class GameBoard extends JFrame{
         //Check adjacent space around clicked location
         if(temp.getLeftClick() == 1){
           addNumber(temp.getRow(), temp.getCol());
-          //----Put Auto clear function here----
+          autoClear(temp.getRow(), temp.getCol());
         }
       }
+      timerRLabel.setIcon(iconArray[1]);  //set label to 001
+      timeClock.start();  //start the timer
     }
   }
   
@@ -274,6 +281,7 @@ public class GameBoard extends JFrame{
       
       timeCount++;
       timeString = Integer.toString(timeCount);
+      char arr[]= timeString.toCharArray();  // 123 => arr[0]=1, arr[1]=2, arr[2]=3
       timeLength = timeString.length();
       
       //Single digit
@@ -281,15 +289,18 @@ public class GameBoard extends JFrame{
         timerRLabel.setIcon(iconArray[timeCount]);
       }
       else if(timeLength == 2){
-        //parse string
+        timerMLabel.setIcon(iconArray[Integer.parseInt(String.valueOf(arr[0]))]);
+        timerRLabel.setIcon(iconArray[Integer.parseInt(String.valueOf(arr[1]))]);                              
       }
       else if(timeLength == 3){
         //If hit max time, stop the clock
-        if(timeCount == 999){
+        if(timeCount > 999){
           timeClock.stop();
         }
         else{
-        
+          timerLLabel.setIcon(iconArray[Integer.parseInt(String.valueOf(arr[0]))]);
+          timerMLabel.setIcon(iconArray[Integer.parseInt(String.valueOf(arr[1]))]);
+          timerRLabel.setIcon(iconArray[Integer.parseInt(String.valueOf(arr[2]))]);
         }
       }
     }
@@ -320,25 +331,25 @@ public class GameBoard extends JFrame{
     int upCol = col + 1;
     
     //Northeast
-    if(downRow > 0 && downCol > 0){
+    if(downRow >= 0 && downCol >= 0){
       if(button[downRow][downCol].getBomb() == 1){
         mineCount++;
       }
     }
     //North
-    if(downRow > 0){
+    if(downRow >= 0){
       if(button[downRow][col].getBomb() == 1){
         mineCount++;
       }
     }
     //Northwest
-    if(downRow > 0 && upCol < 10){
+    if(downRow >= 0 && upCol < 10){
       if(button[downRow][upCol].getBomb() == 1){
         mineCount++;
       }
     }
     //West
-    if(downCol > 0){
+    if(downCol >= 0){
       if(button[row][downCol].getBomb() == 1){
         mineCount++;
       }
@@ -349,8 +360,8 @@ public class GameBoard extends JFrame{
         mineCount++;
       }
     }
-    //Southeast
-    if(upRow < 10 && downCol > 0){
+    //Southwest
+    if(upRow < 10 && downCol >= 0){
       if(button[upRow][downCol].getBomb() == 1){
         mineCount++;
       }
@@ -361,7 +372,7 @@ public class GameBoard extends JFrame{
         mineCount++;
       }
     }
-    //Southwest
+    //Southeast
     if(upRow < 10 && upCol < 10){
       if(button[upRow][upCol].getBomb() == 1){
         mineCount++;
@@ -371,9 +382,10 @@ public class GameBoard extends JFrame{
     //Set number on space
     if(mineCount > 0){  //Number space
       button[row][col].setEnable(0);
+      button[row][col].setNumber(1);  //?????????????????? (DFS)
       button[row][col].setIcon(numberArray[mineCount-1]);
     }
-    else{  //Empty space
+    else if(mineCount == 0 && (button[row][col].getBomb() == 0)){  //Empty space
       button[row][col].setEnable(0);
       button[row][col].setIcon(buttonPressed);
     }
@@ -385,16 +397,143 @@ public class GameBoard extends JFrame{
   
   //Auto clear (DFS)
   public void autoClear(int row, int col){
+    int mineCount = 0;
     int downRow = row - 1;
     int upRow = row + 1;
     int downCol = col -1;
     int upCol = col + 1;
     
-    if(downRow > 0 && downCol > 0 && upRow < 10 && upCol< 10){
+    
+    
+    if(button[row][col].getVisited() == 0){
+      if(button[row][col].getNumber() == 1){  //adjacent space have a bomb
+        button[row][col].setVisited(1);
+        addNumber(row,col);
+      }
+      else{
+        addNumber(row,col);
+        button[row][col].setVisited(1);
+        //Northwest
+        if(downRow >= 0 && downCol >= 0){
+          if(button[downRow][downCol].getBomb() == 0){
+            autoClear(downRow, downCol);
+          }
+        }
+        //North
+        if(downRow >= 0){
+          if(button[downRow][col].getBomb() == 0){
+            autoClear(downRow, col);
+          }
+        }
+        //Northeast
+        if(downRow >= 0 && upCol < 10){
+          if(button[downRow][upCol].getBomb() == 0){
+            autoClear(downRow, upCol);
+          }
+        }
+        //West
+        if(downCol >= 0){
+          if(button[row][downCol].getBomb() == 0){
+            autoClear(row, downCol);
+          }
+        }
+        //East
+        if(upCol < 10){
+          if(button[row][upCol].getBomb() == 0){
+            autoClear(row, upCol);
+          }
+        }
+        //Southwest
+        if(upRow < 10 && downCol >= 0){
+          if(button[upRow][downCol].getBomb() == 0){
+            autoClear(upRow, downCol);
+          }
+        }
+        //South
+        if(upRow < 10){
+          if(button[upRow][col].getBomb() == 0){
+            autoClear(upRow, col);
+          }
+        }
+        //Southeast
+        if(upRow < 10 && upCol < 10){
+          if(button[upRow][upCol].getBomb() == 0){
+            autoClear(upRow, upCol);
+          }
+        }
+      }
       
     }
-       
+    //button[row][col].setVisited(1);
   }
+  
+  //set number state
+  public void setNumberState(){
+    for(i=0;i<10;i++){
+      for(j=0;j<10;j++){
+        int downRow = i - 1;
+        int upRow = i + 1;
+        int downCol = j -1;
+        int upCol = j + 1;
+        int mineCount = 0;
+        //Northeast
+        if(downRow >= 0 && downCol >= 0){
+          if(button[downRow][downCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //North
+        if(downRow >= 0){
+          if(button[downRow][j].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //Northwest
+        if(downRow >= 0 && upCol < 10){
+          if(button[downRow][upCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //West
+        if(downCol >= 0){
+          if(button[i][downCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //East
+        if(upCol < 10){
+          if(button[i][upCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //Southwest
+        if(upRow < 10 && downCol >= 0){
+          if(button[upRow][downCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //South
+        if(upRow < 10){
+          if(button[upRow][j].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        //Southeast
+        if(upRow < 10 && upCol < 10){
+          if(button[upRow][upCol].getBomb() == 1){
+            mineCount++;
+          }
+        }
+        
+        //Set number on space
+        if(mineCount > 0){  //Number space
+          button[i][j].setNumber(1);  //?????????????????? (DFS)
+        }
+      } 
+    }
+  }
+  
+  
   
   //Game end
   
