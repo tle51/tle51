@@ -1,7 +1,7 @@
 /* Tan Le
  * CS 342
  * Programming Project 2 - MineSweeper
- * GameBoard Class
+ * GameBoard Class - Set up the game board and include the function of the game
  * */
 
 import java.awt.*;
@@ -13,6 +13,7 @@ public class GameBoard extends JFrame{
   private MyJButton[][] button = new MyJButton[10][10];
   private int i, j;
   private int state = 0;
+  private int mineRemain = 10;  //Used for displaying mine label
   //Menu
   private JMenuBar menuBar;
   private JMenu gameMenu, helpMenu;
@@ -45,7 +46,7 @@ public class GameBoard extends JFrame{
   private ImageIcon numberArray[];
   //Timer
   private Timer timeClock = new Timer(1000, new TimerHandler());
-  private int timeCount = 1;  //timer
+  private int timeCount = 0;  //timer
   
   public GameBoard(){
     //Window Title
@@ -117,7 +118,9 @@ public class GameBoard extends JFrame{
     gameMenu = new JMenu("Game");
     helpMenu = new JMenu("Help");
     resetMenu = new JMenuItem("Reset");
+    resetMenu.setMnemonic(KeyEvent.VK_R);
     scoreMenu = new JMenuItem("Top Ten");
+    scoreMenu.setMnemonic(KeyEvent.VK_T);
     exitMenu = new JMenuItem("Exit");
     exitMenu.addActionListener(new ExitHandler());
     exitMenu.setMnemonic(KeyEvent.VK_X);
@@ -126,6 +129,7 @@ public class GameBoard extends JFrame{
     helpSubMenu.setMnemonic(KeyEvent.VK_L);
     aboutMenu = new JMenuItem("About");
     aboutMenu.addActionListener(new AboutHandler());
+    aboutMenu.setMnemonic(KeyEvent.VK_A);
     menuBar.add(gameMenu);
     menuBar.add(helpMenu);
     gameMenu.add(resetMenu);
@@ -198,7 +202,7 @@ public class GameBoard extends JFrame{
       
       //Start the clock
       if(checkWin() == 0){
-        timerRLabel.setIcon(iconArray[1]);  //set label to 001
+        //timerRLabel.setIcon(iconArray[1]);  //set label to 001
         timeClock.start();  //start the timer
       }
     }
@@ -214,7 +218,12 @@ public class GameBoard extends JFrame{
     }
     public void mouseReleased(MouseEvent event){
       //JButton temp = (JButton) event.getSource();
-      resetButton.setIcon(smileButton);
+      if(checkWin() == 0){
+        resetButton.setIcon(smileButton);
+      }
+      else{
+        resetButton.setIcon(headGlasses);
+      }
     }
   }
   
@@ -281,7 +290,12 @@ public class GameBoard extends JFrame{
     }
     //Released State
     public void mouseReleased(MouseEvent event){
-      resetButton.setIcon(smileButton);
+      if(checkWin() == 0){
+        resetButton.setIcon(smileButton);
+      }
+      else{
+        resetButton.setIcon(headGlasses);
+      }
     }
   }
   
@@ -563,6 +577,10 @@ public class GameBoard extends JFrame{
     return 1;  //all safe button are cleared -> winning condition
   }
   
+  //Change the number of the mine counter label
+  public void countMineLabel(){
+    
+  }
   
   //Game end
   

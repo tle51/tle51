@@ -3,7 +3,6 @@
  * Programming Project 2 - MineSweeper
  * MyJButton Class - Control the button states
  * */
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -20,6 +19,7 @@ class MyJButton extends JButton
   private int normalSpace;  //1 - non-mine state, 0 - mine?
   private int visitedState;  //0 - not visited, 1 - visited
   private int numberState = 0;  //1 - a number
+  private int flagState = 0;
   
   //Row and Column Info
   public void setNumber (int r, int c)
@@ -91,12 +91,20 @@ class MyJButton extends JButton
     return visitedState;
   }
   
-  //number state?
+  //Number state (bomb adjacent)
   public void setNumber(int i){
     numberState = i;
   }
   public int getNumber(){
     return numberState;
+  }
+  
+  //Flag state
+  public void setFlag(int i){
+    flagState = i;
+  }
+  public int getFlag(){
+    return flagState;
   }
   
 }

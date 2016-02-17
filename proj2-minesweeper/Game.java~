@@ -1,7 +1,7 @@
 /* Tan Le
  * CS 342
  * Programming Project 2 - MineSweeper
- * Game Class
+ * Game Class - Start the game
  * */
 
 import java.awt.*;
