@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import static java.nio.file.StandardOpenOption.*;
+import java.util.Scanner;
 
 public class GameBoard extends JFrame{
   private Container container = new Container();
@@ -22,6 +23,7 @@ public class GameBoard extends JFrame{
   private JMenu gameMenu, helpMenu;
   private JMenuItem resetMenu;
   private JMenuItem scoreMenu;
+  private JMenuItem resetScoreMenu;
   private JMenuItem exitMenu;
   private JMenuItem helpSubMenu;
   private JMenuItem aboutMenu;
@@ -58,6 +60,7 @@ public class GameBoard extends JFrame{
   private int[] scoreArr = new int[10];  //Store the score in array respective to stringArr[]
   private Path p = Paths.get("./topTenList.txt");  //text file containing the score board
   private String userInput;
+  private String preParse;
   
   public GameBoard(){
     //Window Title
@@ -132,6 +135,10 @@ public class GameBoard extends JFrame{
     resetMenu.addActionListener(new ResetHandler2());
     scoreMenu = new JMenuItem("Top Ten");
     scoreMenu.setMnemonic(KeyEvent.VK_T);
+    scoreMenu.addActionListener(new scoreHandler());
+    resetScoreMenu = new JMenuItem("Reset Top Ten");
+    resetScoreMenu.setMnemonic(KeyEvent.VK_E);
+    resetScoreMenu.addActionListener(new resetScoreBoard());
     exitMenu = new JMenuItem("Exit");
     exitMenu.addActionListener(new ExitHandler());
     exitMenu.setMnemonic(KeyEvent.VK_X);
@@ -144,6 +151,7 @@ public class GameBoard extends JFrame{
     menuBar.add(gameMenu);
     menuBar.add(helpMenu);
     gameMenu.add(resetMenu);
+    gameMenu.add(resetScoreMenu);
     gameMenu.add(scoreMenu);
     gameMenu.add(exitMenu);
     helpMenu.add(helpSubMenu);
@@ -175,16 +183,19 @@ public class GameBoard extends JFrame{
     randomizeBomb();
     setNumberState();
     
+    //Initialize stringArr and scoreArr
+    for(i=0;i<10;i++){
+      stringArr[i] = "";
+      scoreArr[i] = 0;
+    }
+    createList();  //create a scoreboard pile
+    
     //Set window size and display it
     add(mainPanel);  //add main panel to frame
     setSize(185,275);
     setResizable(false);  //disable window resizing
     setVisible(true);
     setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-    
-    //-----------------TEST--------------
-    createList();
-    //readList();
     
   }  //End of constructor
   
@@ -420,6 +431,26 @@ public class GameBoard extends JFrame{
     }
   }
   
+  //Handler for Top Ten menu item
+  private class scoreHandler implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      displayList();
+    }
+  }
+  
+  //Handler to reset score board
+  private class resetScoreBoard implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      try{
+        PrintWriter clear = new PrintWriter("./topTenList.txt");
+        clear.close();
+      }
+      catch(IOException x){
+        System.err.println(x);
+      }
+    }
+  }
+  
   //------------------------------------------------------------
   
   //Randomize Bomb Location
@@ -525,11 +556,11 @@ public class GameBoard extends JFrame{
       mineMLabel.setIcon(iconArray[0]);
       mineRLabel.setIcon(iconArray[0]);
       
-      //Check if time is a high score
-      
-      
       //Get user input if time is a high score
-      JOptionPane.showMessageDialog(null, "You Win!\n" + "Time: " + timeCount, "Congratulation",JOptionPane.PLAIN_MESSAGE);
+      //userInput = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
+      //Check if time is a high score
+      updateScore();
+      
     }
   }
   
@@ -720,73 +751,157 @@ public class GameBoard extends JFrame{
   }
   
   //Read a file (and display score)
-  public void readList(){
+  public void displayList(){
     //Read the file
     int temp = 0;
-    try(InputStream input = Files.newInputStream(p);
-        BufferedReader readInput = new BufferedReader(new InputStreamReader(input))){
-          String line = null;
-          while((line = readInput.readLine()) != null){
-            stringArr[temp] = line;
-            temp++;
-          }
+    try{//(InputStream input = Files.newInputStream(p);
+        Scanner sc = new Scanner(new File("./topTenList.txt"));
+//        BufferedReader readInput = new BufferedReader(new InputStreamReader(input))){
+//          String line = null;
+//          while((line = readInput.readLine()) != null){
+//            stringArr[temp] = line;
+//            if(sc.hasNextInt()){
+//              scoreArr[temp] = sc.nextInt();
+//            }
+//            temp++;
+//          }
+        while(sc.hasNext() == true){
+          stringArr[temp] = sc.next();
+          //if(sc.hasNextInt() == true){
+          scoreArr[temp] = sc.nextInt();
+          //}
+          temp++;
         }
-        catch(IOException x){
-          System.err.println(x);
-        }
-     //Display in popup window
-     JOptionPane.showMessageDialog(null, "1. " + stringArr[0] + "\n" + "2. " + stringArr[1] + "\n" + "3. " + stringArr[2] + "\n"
-                                     + "4. " + stringArr[3] + "\n" + "5. " + stringArr[4] + "\n" + "6. " + stringArr[5] + "\n"
-                                     + "7. " + stringArr[6] + "\n" + "8. " + stringArr[7] + "\n" + "9. " + stringArr[8] + "\n"
-                                     + "10. " + stringArr[9] + "\n", "High Score", JOptionPane.PLAIN_MESSAGE);
+    }
+    catch(IOException x){
+      System.err.println(x);
+    }
+    //Display in popup window
+    JOptionPane.showMessageDialog(null, "1. " + stringArr[0] +" - "+ scoreArr[0] + "\n" + "2. " + stringArr[1] +" - "+ scoreArr[1] + "\n" + "3. " + stringArr[2] +" - "+ scoreArr[2] + "\n"
+                                     + "4. " + stringArr[3] +" - "+ scoreArr[3] + "\n" + "5. " + stringArr[4] +" - "+ scoreArr[4] + "\n" + "6. " + stringArr[5] +" - "+ scoreArr[5] + "\n"
+                                     + "7. " + stringArr[6] +" - "+ scoreArr[6] + "\n" + "8. " + stringArr[7] +" - "+ scoreArr[7] + "\n" + "9. " + stringArr[8] +" - "+ scoreArr[8] + "\n"
+                                     + "10. " + stringArr[9] +" - "+ scoreArr[9] + "\n", "High Score", JOptionPane.PLAIN_MESSAGE);
   }
   
-  //Create and write a file (store score)
+  //Create a file tp store score
   public void createList(){
     int temp;
-    File f = new File("topTenList.txt");
+    File f = new File("./topTenList.txt");
     boolean bool = f.exists();  //Check if file exists
     try{
-//    String s = stringArr[temp];
-//    byte word[] = s.getBytes();
-//    try(OutputStream output = new BufferedOutputStream(Files.newOutputStream(p, CREATE, APPEND))){
-//      output.write(word, 0, word.length);
-//    }
-//    catch(IOException x){
-//      System.err.println(x);
-//    }
+      //FileWriter writer = new FileWriter("topTenList.txt");
+      //BufferedWriter out = new BufferedWriter(writer);
       
-      OutputStream output = new FileOutputStream(f);
       //Check if top ten list file exist
-      if(bool == true){  //File does exist -> change file content
-        //Modify the content (Update new score)
-        //------TEMP-----
-        //Read and fetch each line for score
-        for(temp=0; temp<10; temp++){
-          stringArr[temp] = "" + temp;
-        }
-        //---------------
-      }
-      else{  //Doesnt exist -> make a new file and initialize layout
+      if(bool == false){  //File does not exist -> make a new file and initialize layout
         f.createNewFile();
-        //Initialize string array
-        for(temp=0; temp<10; temp++){
-          stringArr[temp] = "" + temp;
-        }
       }
-      //Write to file
-      for(temp=0; temp<10;temp++){
-        byte word[] = stringArr[temp].getBytes();
-        output.write(word, 0, word.length);
-      }
-      output.flush();
-      output.close();
+
+//      //Write to file
+//      for(temp=0; temp<10;temp++){
+//        if(scoreArr[temp] > 0){
+//          out.write(stringArr[temp]);
+//          out.write(""+scoreArr[temp]);
+//          out.newLine();
+//        }
+//      }
+//      out.close();
     } 
     catch(IOException x){
       System.err.println(x);
     }
   }
  
+  //Check and update high score
+  public void updateScore(){
+    int temp = 0;
+    int temp2 = 0;
+    int temp3 = 0;
+    int temp4;
+    int spaceCount = 0;  //keep track of all the spaces
+    
+    //Read the file and store into array
+    try{
+      //f.createNewFile();
+      Scanner sc = new Scanner(new File("./topTenList.txt"));
+      while(sc.hasNext() == true){
+        stringArr[temp2] = sc.next();
+        scoreArr[temp2] = sc.nextInt();
+        temp2++;
+      }
+      
+      //Check if there a new score
+      for(i=0; i<10; i++){
+        if(timeCount < scoreArr[i] || scoreArr[i] == 0){
+          preParse = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
+     
+          //Remove space from user input
+          char[] parse = preParse.toCharArray();
+          //parse[] = preParse.toCharArray();
+          while(temp3 < preParse.length()){
+            if(parse[temp3] == ' '){
+              spaceCount++;
+              //parse[temp3] = '_';
+              temp4 = temp3;
+              while(temp4 < preParse.length()-1){
+                parse[temp4] = parse[temp4+1];
+                temp4++;
+              }
+            }
+            temp3++;
+          }
+          //Remove extra space at the end
+          for(i=0; i<spaceCount; i++){
+            parse[preParse.length()-i-1] = '\0';
+          }
+          //parse[preParse.length()-1] = '\0';
+          String tempInput = new String(parse);
+          userInput = tempInput;
+
+          break;
+        }
+      }
+      
+      //Update the list
+      int tempScore1 = timeCount;
+      String tempString1 = userInput;
+      int tempScore2;
+      String tempString2;
+      for(i=0; i<10; i++){
+        //New High score
+        if(timeCount < scoreArr[i] || scoreArr[i] == 0){
+          for(j=i; j<10; j++){
+            //Save old score
+            tempScore2 = scoreArr[j];
+            tempString2 = stringArr[j];
+            //Store new one in
+            scoreArr[j] = tempScore1;
+            stringArr[j] = tempString1;
+            //Swap
+            tempScore1 = tempScore2;
+            tempString1 = tempString2;
+          }
+          break;
+        }
+      }
+      
+      //Write to file
+      FileWriter writer = new FileWriter("./topTenList.txt");
+      BufferedWriter out = new BufferedWriter(writer);
+      for(i=0; i<10; i++){
+        if(scoreArr[i] > 0){
+          out.write(stringArr[i] + " ");
+          out.write(scoreArr[i] + " ");
+        }
+      }
+      out.close();
+      
+    }
+    catch(IOException x){
+      System.err.println(x);
+    }
+        
+  }
   
   
 }  //End of class GameBoard
