@@ -60,6 +60,7 @@ public class GameBoard extends JFrame{
   private int[] scoreArr = new int[10];  //Store the score in array respective to stringArr[]
   private Path p = Paths.get("./topTenList.txt");  //text file containing the score board
   private String userInput;
+  private String preParse;
   
   public GameBoard(){
     //Window Title
@@ -137,6 +138,7 @@ public class GameBoard extends JFrame{
     scoreMenu.addActionListener(new scoreHandler());
     resetScoreMenu = new JMenuItem("Reset Top Ten");
     resetScoreMenu.setMnemonic(KeyEvent.VK_E);
+    resetScoreMenu.addActionListener(new resetScoreBoard());
     exitMenu = new JMenuItem("Exit");
     exitMenu.addActionListener(new ExitHandler());
     exitMenu.setMnemonic(KeyEvent.VK_X);
@@ -433,6 +435,19 @@ public class GameBoard extends JFrame{
   private class scoreHandler implements ActionListener{
     public void actionPerformed(ActionEvent event){
       displayList();
+    }
+  }
+  
+  //Handler to reset score board
+  private class resetScoreBoard implements ActionListener{
+    public void actionPerformed(ActionEvent event){
+      try{
+        PrintWriter clear = new PrintWriter("./topTenList.txt");
+        clear.close();
+      }
+      catch(IOException x){
+        System.err.println(x);
+      }
     }
   }
   
@@ -799,11 +814,13 @@ public class GameBoard extends JFrame{
  
   //Check and update high score
   public void updateScore(){
-    //File f = new File("topTenList.txt");
     int temp = 0;
+    int temp2 = 0;
+    int temp3 = 0;
+    int temp4;
+    int spaceCount = 0;  //keep track of all the spaces
     
     //Read the file and store into array
-    int temp2 = 0;
     try{
       //f.createNewFile();
       Scanner sc = new Scanner(new File("./topTenList.txt"));
@@ -815,8 +832,32 @@ public class GameBoard extends JFrame{
       
       //Check if there a new score
       for(i=0; i<10; i++){
-        if(timeCount < scoreArr[i]){
-          userInput = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
+        if(timeCount < scoreArr[i] || scoreArr[i] == 0){
+          preParse = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
+     
+          //Remove space from user input
+          char[] parse = preParse.toCharArray();
+          //parse[] = preParse.toCharArray();
+          while(temp3 < preParse.length()){
+            if(parse[temp3] == ' '){
+              spaceCount++;
+              //parse[temp3] = '_';
+              temp4 = temp3;
+              while(temp4 < preParse.length()-1){
+                parse[temp4] = parse[temp4+1];
+                temp4++;
+              }
+            }
+            temp3++;
+          }
+          //Remove extra space at the end
+          for(i=0; i<spaceCount; i++){
+            parse[preParse.length()-i-1] = '\0';
+          }
+          //parse[preParse.length()-1] = '\0';
+          String tempInput = new String(parse);
+          userInput = tempInput;
+
           break;
         }
       }
@@ -828,7 +869,7 @@ public class GameBoard extends JFrame{
       String tempString2;
       for(i=0; i<10; i++){
         //New High score
-        if(timeCount < scoreArr[i]){
+        if(timeCount < scoreArr[i] || scoreArr[i] == 0){
           for(j=i; j<10; j++){
             //Save old score
             tempScore2 = scoreArr[j];
@@ -843,8 +884,6 @@ public class GameBoard extends JFrame{
           break;
         }
       }
-//      scoreArr[1] = timeCount;
-//      stringArr[1] = userInput;
       
       //Write to file
       FileWriter writer = new FileWriter("./topTenList.txt");

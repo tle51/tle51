@@ -442,8 +442,17 @@ public class GameBoard extends JFrame{
   private class resetScoreBoard implements ActionListener{
     public void actionPerformed(ActionEvent event){
       try{
-        PrintWriter clear = new PrintWriter("./topTenList.txt");
-        clear.close();
+        //PrintWriter clear = new PrintWriter("topTenList.txt");
+        //clear.close();
+              //Write to file
+        FileWriter writer = new FileWriter("./topTenList.txt");
+        BufferedWriter out = new BufferedWriter(writer);
+        for(i=0; i<10; i++){
+          stringArr[i] = "";
+          scoreArr[i] = 0;
+        }
+        out.write("");  
+        out.close();
       }
       catch(IOException x){
         System.err.println(x);
