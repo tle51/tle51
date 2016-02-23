@@ -843,31 +843,42 @@ public class GameBoard extends JFrame{
       for(i=0; i<10; i++){
         if(timeCount < scoreArr[i] || scoreArr[i] == 0){
           preParse = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
-     
-          //Remove space from user input
-          char[] parse = preParse.toCharArray();
-          //parse[] = preParse.toCharArray();
-          while(temp3 < preParse.length()){
-            if(parse[temp3] == ' '){
-              spaceCount++;
-              //parse[temp3] = '_';
-              temp4 = temp3;
-              while(temp4 < preParse.length()-1){
-                parse[temp4] = parse[temp4+1];
-                temp4++;
+          //Hit the cancel button
+          if(preParse == null){
+            return;
+          }
+          //Don't type a name
+          else if(preParse.equals("")){
+            userInput = "[Blank]";
+            break;
+          }
+          //Enter a name
+          else{
+            //Remove space from user input
+            char[] parse = preParse.toCharArray();
+            //parse[] = preParse.toCharArray();
+            while(temp3 < preParse.length()){
+              if(parse[temp3] == ' '){
+                spaceCount++;
+                //parse[temp3] = '_';
+                temp4 = temp3;
+                while(temp4 < preParse.length()-1){
+                  parse[temp4] = parse[temp4+1];
+                  temp4++;
+                }
               }
+              temp3++;
             }
-            temp3++;
+            //Remove extra space at the end
+            for(i=0; i<spaceCount; i++){
+              parse[preParse.length()-i-1] = '\0';
+            }
+            //parse[preParse.length()-1] = '\0';
+            String tempInput = new String(parse);
+            userInput = tempInput;
+            
+            break;
           }
-          //Remove extra space at the end
-          for(i=0; i<spaceCount; i++){
-            parse[preParse.length()-i-1] = '\0';
-          }
-          //parse[preParse.length()-1] = '\0';
-          String tempInput = new String(parse);
-          userInput = tempInput;
-
-          break;
         }
       }
       
