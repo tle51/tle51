@@ -442,9 +442,7 @@ public class GameBoard extends JFrame{
   private class resetScoreBoard implements ActionListener{
     public void actionPerformed(ActionEvent event){
       try{
-        //PrintWriter clear = new PrintWriter("topTenList.txt");
-        //clear.close();
-              //Write to file
+        //Write to file
         FileWriter writer = new FileWriter("./topTenList.txt");
         BufferedWriter out = new BufferedWriter(writer);
         for(i=0; i<10; i++){
@@ -567,7 +565,8 @@ public class GameBoard extends JFrame{
       
       //Get user input if time is a high score
       //userInput = (String)JOptionPane.showInputDialog(null, "You Win!\n" + "Enter your name: ", "New High Score",JOptionPane.PLAIN_MESSAGE);
-      //Check if time is a high score
+      
+      //Check and update if time is a high score
       updateScore();
       
     }
@@ -595,6 +594,7 @@ public class GameBoard extends JFrame{
     gameOver = 0;
     
     //Reset Clock
+    timeClock.stop();
     timeCount = 0;
     timerLLabel.setIcon(iconArray[0]);
     timerMLabel.setIcon(iconArray[0]);
@@ -903,13 +903,11 @@ public class GameBoard extends JFrame{
           out.write(scoreArr[i] + " ");
         }
       }
-      out.close();
-      
+      out.close(); 
     }
     catch(IOException x){
       System.err.println(x);
-    }
-        
+    } 
   }
   
   
