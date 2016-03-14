@@ -1,7 +1,7 @@
 public class Test{
   public static void main(String args[]){
-    HugeUnsignedInteger one = new HugeUnsignedInteger("9300001456");
-    HugeUnsignedInteger two = new HugeUnsignedInteger("9");
+    HugeUnsignedInteger one = new HugeUnsignedInteger("89615965056633446438210351206080");
+    HugeUnsignedInteger two = new HugeUnsignedInteger("7");
 //    HugeUnsignedInteger three = new HugeUnsignedInteger("3242359292923939548");
 //    HugeUnsignedInteger four = new HugeUnsignedInteger("12345");
 //    HugeUnsignedInteger five = new HugeUnsignedInteger("12334");
@@ -19,7 +19,7 @@ public class Test{
     
     //Multiplication
     //System.out.println(56 / 10 % 10);
-    System.out.println("Multiply: " + one.multiplication(one));
+    System.out.println("Multiply: " + one.multiplication(two));
     
     //Division
     //System.out.println(1423234/23238);

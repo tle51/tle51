@@ -448,7 +448,7 @@ public class HugeUnsignedInteger{
       //Pulldown should not be less than divisor
       if(tempInt.numDigit >= value2.numDigit){
         //System.out.println("STEP 2");
-        //If equal length - should dividend should not be less than divisor in value
+        //If equal length - dividend should not be less than divisor in value
         if(tempInt.equalTo(value2) == 1 || tempInt.greaterThan(value2)== 1){
           //Looping subtraction
           while(true){
@@ -535,6 +535,9 @@ public class HugeUnsignedInteger{
       for(i=numDigit-1; i>=0; i--){
         if(arr[i] > value2.arr[i]){
           return 1;
+        }
+        if(arr[i] < value2.arr[i]){
+          return 0;
         }
       }
     }

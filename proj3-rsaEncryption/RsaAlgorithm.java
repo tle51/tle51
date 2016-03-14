@@ -16,6 +16,7 @@ public class RsaAlgorithm
     private String startRsaTag = "<rsakey>";
     private String endRsaTag = "</rsakey>";
     private String fileName;
+    private int k = 1;
     
     public RsaAlgorithm(String prime1, String prime2, String pubFile, String priFile)
     {
@@ -96,19 +97,17 @@ public class RsaAlgorithm
         String temp = "0";
         String phiTemp = phi; //set the value of phi to a temp variable
         
-        while(!phi.equals("0"))
+        while(!phiTemp.equals("0"))
         {
             //objects for s and phi
             hui1 = new HugeUnsignedInteger(s);
-            HugeUnsignedInteger phiHui = new HugeUnsignedInteger(phi);
-            temp = phi;
-            phi = hui1.modulus(phiHui);   //e%phi
+            HugeUnsignedInteger phiHui = new HugeUnsignedInteger(phiTemp);
+            temp = phiTemp;
+            phiTemp = hui1.modulus(phiHui);   //e%phi
             //System.out.println("after mod call in gcd " + phi);
             s = temp; //update s
         }
         
-        //Reset phi to its original value
-        phi = phiTemp;
         return Integer.parseInt(s);
     }
     
@@ -116,7 +115,7 @@ public class RsaAlgorithm
     public void generateE()
     {
         //Assign e to 3 because it is guaranteed to be less than n
-        e = "3";
+        e = "2";
         hui1 = new HugeUnsignedInteger(n);
         one = new HugeUnsignedInteger("1");
         int temp = Integer.parseInt(e);
@@ -127,12 +126,12 @@ public class RsaAlgorithm
         }
         else
         {
-            int i = 3;
+            //int i = 2;
             while(isGcd(e) != 1)
             {
                 temp = (Integer.parseInt(e)) + 1;
                 e = Integer.toString(temp);
-                i++;
+                //i++;
             }
         }
         System.out.println("e val is " + e);
@@ -142,9 +141,8 @@ public class RsaAlgorithm
     //Let k = 1
     public void generateD()
     {
-        //System.out.println("phi in D  " +phi);
         hui1 = new HugeUnsignedInteger(phi);
-        hui2 = new HugeUnsignedInteger("1");
+        hui2 = new HugeUnsignedInteger(Integer.toString(k)); //HUI k value
         
         String temp = hui1.multiplication(hui2); //Stores k * phi
         //System.out.println("temp in gen D  " + phi + " " +temp);
@@ -155,6 +153,23 @@ public class RsaAlgorithm
         
         //compute 1+*k*phi)
         String inverse = inverseHUI.addition(one);
+        
+        HugeUnsignedInteger iHui = new HugeUnsignedInteger(inverse);
+        HugeUnsignedInteger eHui = new HugeUnsignedInteger(e);
+        
+        while(!iHui.modulus(eHui).equals("0"))
+        {
+            k += 1;
+            HugeUnsignedInteger kHui = new HugeUnsignedInteger(Integer.toString(k));
+            
+            temp = hui1.multiplication(kHui); //Stores k * phi
+            one = new HugeUnsignedInteger("1");
+            inverseHUI = new HugeUnsignedInteger(temp);
+            inverse = inverseHUI.addition(one);
+            iHui = new HugeUnsignedInteger(inverse);
+        }
+        
+        System.out.println("k is "+ k);
         
         //Make numerator and denominator HUI
         HugeUnsignedInteger numerator = new HugeUnsignedInteger(inverse);

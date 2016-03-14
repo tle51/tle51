@@ -31,7 +31,7 @@ public class Gui extends JFrame implements ActionListener{
     private Container container;
     
     private String primeStr1, primeStr2;
-    private Boolean genKey = false;
+    private String blockSize;
     
     public Gui()
     {
@@ -163,8 +163,9 @@ public class Gui extends JFrame implements ActionListener{
     {
         String prime1 = primeField.getText();
         String prime2 = primeField2.getText();
-        primeStr1 = prime1;
-        primeStr2 = prime2;
+        
+        //		primeStr1 = prime1;
+        //		primeStr2 = prime2;
         
         //Check if the values are prime number
         if(primeCheck(prime1) && primeCheck(prime2))
@@ -205,10 +206,10 @@ public class Gui extends JFrame implements ActionListener{
         HugeUnsignedInteger two = new HugeUnsignedInteger("1");
         
         //Divide the number by 2.
-        String nStr = hui.multiplication(two);
-        HugeUnsignedInteger nHui = new HugeUnsignedInteger(nStr);
+        //		String nStr = hui.multiplication(two);
+        //		HugeUnsignedInteger nHui = new HugeUnsignedInteger(nStr);
         
-        Long nl = Long.parseLong(nStr);
+        Long nl = Long.parseLong(p);
         int i = 0;
         for(i = 2; i <= Math.sqrt(nl); i++)
         {
@@ -216,7 +217,7 @@ public class Gui extends JFrame implements ActionListener{
             HugeUnsignedInteger x = new HugeUnsignedInteger(s);
             String temp = hui.modulus(x);
             
-            if(Long.parseLong(temp) == 0)
+            if(temp.equals("0"))
             {
                 System.out.println("in is temp = 0?");
                 return false;
@@ -298,10 +299,19 @@ public class Gui extends JFrame implements ActionListener{
         //container.remove(panel2);
         
         blockPanel = new JPanel();
+        
         //Get name of the block file.
         String messageFile = JOptionPane.showInputDialog("Enter file name of the message.");
         String blockFile = JOptionPane.showInputDialog("Enter file name to save the block.");
-        String blockSize = JOptionPane.showInputDialog("Enter block size.");
+        
+        blockSize = JOptionPane.showInputDialog("Enter block size.");
+        while(Integer.parseInt(blockSize) < 0 || Integer.parseInt(blockSize) > 10)
+        {
+            JOptionPane.showMessageDialog(null, "Block size must be between 1 and 10.\n",
+                                          "Error", JOptionPane.INFORMATION_MESSAGE);
+            blockSize = JOptionPane.showInputDialog("Enter block size.");
+        }
+        
         
         if(messageFile != null && blockFile != null && blockSize != null)
         {
@@ -382,7 +392,7 @@ public class Gui extends JFrame implements ActionListener{
         
         if(decryptFile != null)
         {
-            Decryption decrypt = new Decryption(decryptFile);		
+            Decryption decrypt = new Decryption(decryptFile, Integer.parseInt(blockSize));		
             JLabel l = new JLabel("Decryption done successfully.");
             decryptPanel.add(l);
             
