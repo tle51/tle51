@@ -6,9 +6,9 @@ import java.io.*;
 import java.lang.*;
 
 public class HugeUnsignedInteger{
-  public String value;
-  public int[] arr;
-  public int numDigit;
+  private String value;
+  private int[] arr;
+  private int numDigit;
   private int i, j;
   //Division
   private String tempResult;
@@ -80,10 +80,10 @@ public class HugeUnsignedInteger{
         if(tempAdd < 10){
           int tempAdd2 = tempArr[j] + tempAdd;
           if(tempAdd2 < 10){
-            tempArr[j] = tempAdd2;
+            tempArr[j] = tempArr[j]+tempAdd2;
           }
           else{
-            tempArr[j] = tempAdd2 - 10;
+            tempArr[j] = tempArr[j] + (tempAdd2 - 10);
             tempArr[j+1] = tempArr[j+1] + 1;
           }
         }
@@ -92,11 +92,6 @@ public class HugeUnsignedInteger{
           tempArr[j+1] = tempArr[j+1] + 1;
         }
       }
-      
-      for(i=0; i<tempSize; i++){
-        
-      }
-      
       j++;
     }
     //If there is an extra leading zero in the tempArr
@@ -213,17 +208,6 @@ public class HugeUnsignedInteger{
     int productSize;  //Size of product2
     int[] tempArr;
     int[] productArr;
-    
-    //Multiplying by 0
-    if(value.equals("0")){
-      result = "0";
-      return result;
-    }
-    if(value2.value.equals("0")){
-      result = "0";
-      return result;
-    }
-    
     //Determine the larger digit number
     if(numDigit >= value2.numDigit){
       tempSize = numDigit;
@@ -324,10 +308,10 @@ public class HugeUnsignedInteger{
     for(i=tempCount-1; i>=0; i--){
       result = result + Integer.toString(resultArr[i]);
     }
-//    //Multiplying by 0
-//    if((tempArr[tempSize-1] == 0 && tempSize == 1) || (productArr[productSize-1] == 0 && productSize == 1)){
-//      result = "0";
-//    }
+    //Multiplying by 0
+    if((tempArr[tempSize-1] == 0 && tempSize == 1) || (productArr[productSize-1] == 0 && productSize == 1)){
+      result = "0";
+    }
     
     return result;
   }
@@ -428,12 +412,6 @@ public class HugeUnsignedInteger{
     
     //Check if array1 is 0
     if(arr[0] == 0 && numDigit == 1){
-      result = "0";
-      return result;
-    }
-    
-    //Check if divisor is greater than dividend
-    if(lessThan(value2) == 1){
       result = "0";
       return result;
     }
@@ -564,7 +542,7 @@ public class HugeUnsignedInteger{
       return 0;
     }
   }
-
+  
   //------------Test----------------
   public int getDigit(){
     return numDigit;
