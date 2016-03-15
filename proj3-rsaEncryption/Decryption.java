@@ -21,6 +21,12 @@ public class Decryption{
     //Constructor
     public Decryption(String filePath, int block){
         privateName = filePath;
+        
+        //add file extention if it's not entered by the user
+        if(!privateName.endsWith(".txt"))
+        {
+            privateName = filePath.concat(".txt");
+        }
         privateFile = new File(privateName);
         blockSize = block;
         readXML();

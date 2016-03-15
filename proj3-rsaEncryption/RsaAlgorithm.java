@@ -16,8 +16,9 @@ public class RsaAlgorithm
     private String startRsaTag = "<rsakey>";
     private String endRsaTag = "</rsakey>";
     private String fileName;
-    private int k = 1;
+    private int k = 0;
     
+    //Constructor
     public RsaAlgorithm(String prime1, String prime2, String pubFile, String priFile)
     {
         p = prime1;
@@ -66,29 +67,17 @@ public class RsaAlgorithm
         System.out.println("phi is" + phi);
     }
     
-    //get the value of phi
-    public String getPhi()
-    {
-        return phi;
-    }
-    
     // n = p * q
     public void generateN()
     {
         hui1 = new HugeUnsignedInteger(p);
         hui2 = new HugeUnsignedInteger(q);
-        
+        System.out.println(p + "  " + q);
         System.out.println("HUI1 " + hui1.value);
         System.out.println("HUI2 " + hui2.value);
         
         n = hui1.multiplication(hui2);
         System.out.println("Value of n: " + n);
-    }
-    
-    //get the value of n
-    public String getN()
-    {
-        return n;
     }
     
     //Check if the number is GCD using Euclidean Algorithm
@@ -186,7 +175,6 @@ public class RsaAlgorithm
     
     public void createPubKey(String file)
     {
-        //add .txt file format to the file name
         String fileName = file.concat(".txt");
         System.out.println("N in pub " + n);
         try(BufferedWriter writing = new BufferedWriter(new FileWriter(fileName)))
@@ -209,9 +197,6 @@ public class RsaAlgorithm
     
     public void createPriKey(String file)
     {
-        //add .txt file format to the file name 
-        System.out.println("N in priv " + n);
-        
         fileName = file.concat(".txt");
         try(BufferedWriter writing = new BufferedWriter(new FileWriter(fileName)))
         {

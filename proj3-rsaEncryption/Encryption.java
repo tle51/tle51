@@ -13,14 +13,18 @@ public class Encryption{
     private int i;
     private String xmlName;
     private File xmlFile;
-    private String bName = "block.txt";
-    private File bFile = new File(bName);
-    private File eFile = new File("encrypt.txt");
+    private String bName, eName;
+    private File bFile;
+    private File eFile;
     
     //Constructor
-    public Encryption(String filePath){
-        xmlName = filePath;
+    public Encryption(String filePath, String blockPath, String ePath){
+        xmlName = filePath.concat(".txt");
         xmlFile = new File(xmlName);
+        bName = blockPath.concat(".txt");
+        bFile = new File(bName);
+        eName = ePath.concat(".txt");
+        eFile = new File(eName);
         readXML();
         encrypt();
     }
@@ -119,18 +123,24 @@ public class Encryption{
                 
                 //Convert to HugeUnsignedInteger
                 inputNumber = new HugeUnsignedInteger(tempString2);
-                
-                //C=M^e mod n
-                outputNumber = new HugeUnsignedInteger("1");  //C = 1
-                for(i=0; i<intE; i++){
-                    //System.out.println(i);
-                    resultString = outputNumber.multiplication(inputNumber);
-                    //System.out.println("1: " + resultString);
-                    tempNumber =  new HugeUnsignedInteger(resultString);
-                    resultString = tempNumber.modulus(n);
-                    //System.out.println("2: " + resultString);
-                    outputNumber =  new HugeUnsignedInteger(resultString);
+                outputNumber = new HugeUnsignedInteger("1");
+                for(i=0; i < intE; i++)
+                {
+                    outputNumber = new HugeUnsignedInteger(outputNumber.multiplication(inputNumber));
                 }
+                System.out.println(outputNumber.value);
+                outputNumber = new HugeUnsignedInteger(outputNumber.modulus(n));
+                //C=M^e mod n
+                //outputNumber = new HugeUnsignedInteger("1");  //C = 1
+                //        for(i=0; i<intE; i++){
+                //          //System.out.println(i);
+                //          resultString = outputNumber.multiplication(inputNumber);
+                //          //System.out.println("1: " + resultString);
+                //          tempNumber =  new HugeUnsignedInteger(resultString);
+                //          resultString = tempNumber.modulus(n);
+                //          //System.out.println("2: " + resultString);
+                //          outputNumber =  new HugeUnsignedInteger(resultString);
+                //        }
                 //Write to file
                 System.out.println(outputNumber.value);
                 fWrite.write(outputNumber.value);
