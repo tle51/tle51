@@ -13,20 +13,18 @@ public class Decryption{
     private int i, blockSize;
     private String privateName;
     private File privateFile;  //Private key file
-    private String eName = "encrypt.txt";
-    private String dName = "decrypt.txt";
-    private File eFile = new File(eName);  //Encrypted File
-    private File dFile = new File(dName);  //Decrypted File
+    private String eName;
+    private String dName;
+    private File eFile;
+    private File dFile;
     
     //Constructor
-    public Decryption(String filePath, int block){
-        privateName = filePath;
-        
-        //add file extention if it's not entered by the user
-        if(!privateName.endsWith(".txt"))
-        {
-            privateName = filePath.concat(".txt");
-        }
+    public Decryption(String filePath, int block, String savePath, String ePath){
+        privateName = filePath.concat(".txt");
+        dName = savePath.concat(".txt");
+        dFile = new File(dName);  //Decrypted File
+        eName = ePath.concat(".txt");
+        eFile = new File(eName); //Encrypted File
         privateFile = new File(privateName);
         blockSize = block;
         readXML();
@@ -73,7 +71,7 @@ public class Decryption{
         HugeUnsignedInteger dd;
         //Read each block
         try{
-            BufferedReader fRead = new BufferedReader(new FileReader(eFile));
+            BufferedReader fRead2 = new BufferedReader(new FileReader(eFile));
             
             //Output File
             if(dFile.exists()){
@@ -83,7 +81,7 @@ public class Decryption{
             BufferedWriter fWrite = new BufferedWriter(new FileWriter(dFile, true));
             
             //int c;
-            while((tempString = fRead.readLine()) != null){
+            while((tempString = fRead2.readLine()) != null){
                 //Convert to HugeUnsignedInteger
                 //inputNumber = new HugeUnsignedInteger(tempString);
                 expVal = new HugeUnsignedInteger(tempString);
@@ -176,7 +174,7 @@ public class Decryption{
                 fWrite.newLine();
             }
             fWrite.close();
-            fRead.close();
+            fRead2.close();
         }
         catch(IOException e){
             System.err.println(e);
