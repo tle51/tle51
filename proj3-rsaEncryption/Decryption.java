@@ -71,6 +71,8 @@ public class Decryption{
         HugeUnsignedInteger fVal;
         HugeUnsignedInteger expVal;
         HugeUnsignedInteger dd;
+        HugeUnsignedInteger one = new HugeUnsignedInteger("1");
+        HugeUnsignedInteger two = new HugeUnsignedInteger("2");
         //Read each block
         try{
             BufferedReader fRead2 = new BufferedReader(new FileReader(eFile));
@@ -92,8 +94,6 @@ public class Decryption{
                 System.out.println("N: " + n.value);  //Test
                 //C=M^d mod n
                 //P = C^x * (exp^2 % n)^d % n
-                HugeUnsignedInteger one = new HugeUnsignedInteger("1");
-                HugeUnsignedInteger two = new HugeUnsignedInteger("2");
                 fVal = new HugeUnsignedInteger("1");
                 dd = new HugeUnsignedInteger(d.value);
                 //System.out.println(d.value);
@@ -147,21 +147,21 @@ public class Decryption{
                     }
                     //exp * exp
                     //System.out.println(expVal.value);
-                    String expResult1 = expVal.multiplication(expVal);
-                    expVal = new HugeUnsignedInteger(expResult1);
+                    //String expResult1 = expVal.multiplication(expVal);
+                    expVal = new HugeUnsignedInteger(expVal.multiplication(expVal));
                     //exp % n
-                    expResult1 = expVal.modulus(n);
-                    expVal = new HugeUnsignedInteger(expResult1);
+                    //expResult1 = expVal.modulus(n);
+                    expVal = new HugeUnsignedInteger(expVal.modulus(n));
                     
-                    String divideD = dd.division(two);
-                    dd = new HugeUnsignedInteger(divideD);
+                    //String divideD = dd.division(two);
+                    dd = new HugeUnsignedInteger(dd.division(two));
                 }
                 //When d is equal to 1
                 //System.out.println(fVal.value);
-                String expResult = expVal.multiplication(fVal);
-                expVal = new HugeUnsignedInteger(expResult);
-                String resultVal = expVal.modulus(n);
-                outputNumber = new HugeUnsignedInteger(resultVal);
+                //String expResult = expVal.multiplication(fVal);
+                expVal = new HugeUnsignedInteger(expVal.multiplication(fVal));
+                //String resultVal = expVal.modulus(n);
+                outputNumber = new HugeUnsignedInteger(expVal.modulus(n));
                 System.out.println("Decryption Output: " + outputNumber.value);  //Test
                 
                 //Insert leading zeros
@@ -170,10 +170,17 @@ public class Decryption{
                 {
                     outputLen = "0" + outputLen;
                 }
+                //Odd number that is greater than total block size
+                HugeUnsignedInteger overCount = new HugeUnsignedInteger(Integer.toString(outputLen.length()));
+                HugeUnsignedInteger tt2 = new HugeUnsignedInteger("2");
+                if(overCount.modulus(tt2).equals("1")){  //Odd length
+                  outputLen = "0" + outputLen;
+                }
                 
                 //Write to file
                 fWrite.write(outputLen);
                 fWrite.newLine();
+                tempString = "";
             }
             fWrite.close();
             fRead2.close();

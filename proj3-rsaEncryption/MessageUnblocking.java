@@ -9,16 +9,18 @@ import java.util.Scanner;
 public class MessageUnblocking{
     private String blockName;
     private File blockFile;
-    private String unblockName = "unblock.txt";
-    private File unblockFile = new File(unblockName);
+    private String unblockName;
+    private File unblockFile;
     private String stringInt = "";
     private int i;
     
     //Constructor
-    public MessageUnblocking(String filePath){
+    public MessageUnblocking(String filePath, String savePath){
         blockName = filePath.concat(".txt");
         //blockName = filePath;
         blockFile = new File(blockName);
+        unblockName = savePath.concat(".txt");
+        unblockFile = new File(unblockName);
         //unblockingMessage();
         //convertDecimal();
         convertBlock();

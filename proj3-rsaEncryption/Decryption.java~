@@ -27,8 +27,10 @@ public class Decryption{
         eFile = new File(eName); //Encrypted File
         privateFile = new File(privateName);
         blockSize = block;
+        System.out.println("---Inside Decryption Class---");  //Test
         readXML();
         decrypt();
+        System.out.print("");  //Test
     }
     
     //Read XML File
@@ -50,8 +52,8 @@ public class Decryption{
                     tempN = elementValue.getElementsByTagName("nvalue").item(0).getTextContent();
                     n = new HugeUnsignedInteger(tempN);
                     
-                    System.out.println("d: " + d.value);
-                    System.out.println("n: " + n.value);
+                    System.out.println("D: " + d.value);  //Test
+                    System.out.println("N: " + n.value);  //Test
                 }
             }
         }
@@ -85,9 +87,9 @@ public class Decryption{
                 //Convert to HugeUnsignedInteger
                 //inputNumber = new HugeUnsignedInteger(tempString);
                 expVal = new HugeUnsignedInteger(tempString);
-                //System.out.println(tempString);
-                //System.out.println(d.value);
-                //System.out.println(n.value);
+                System.out.println("Decrpytion Input: " + tempString);  //Test
+                System.out.println("D: " + d.value);  //Test
+                System.out.println("N: " + n.value);  //Test
                 //C=M^d mod n
                 //P = C^x * (exp^2 % n)^d % n
                 HugeUnsignedInteger one = new HugeUnsignedInteger("1");
@@ -160,7 +162,7 @@ public class Decryption{
                 expVal = new HugeUnsignedInteger(expResult);
                 String resultVal = expVal.modulus(n);
                 outputNumber = new HugeUnsignedInteger(resultVal);
-                //System.out.println(outputNumber.value);
+                System.out.println("Decryption Output: " + outputNumber.value);  //Test
                 
                 //Insert leading zeros
                 String outputLen = outputNumber.value;
