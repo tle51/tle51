@@ -105,7 +105,7 @@ public class MessageBlocking{
             }
             //Grab enough
             if(blockCount == incrementCount || i==blockValue.numDigit){
-                System.out.println(blockString);
+                //System.out.println(blockString);
                 try{
                     //Write to file
                     fWrite = new BufferedWriter(new FileWriter(blockFile,true)); //Temp file for testing
