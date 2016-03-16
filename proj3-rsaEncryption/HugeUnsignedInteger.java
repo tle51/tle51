@@ -425,6 +425,9 @@ public class HugeUnsignedInteger{
                 if(arr[i] > value2.arr[i]){
                     return 1;
                 }
+                if(arr[i] < value2.arr[i]){
+                  return 0;
+                }
             }
         }
         else{
