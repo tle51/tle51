@@ -156,7 +156,7 @@ public class MessageUnblocking{
                 //Read string
                 StringReader strRead = new StringReader(tempString);
                 tempLen = tempString.length();
-                System.out.println(tempString);
+                //System.out.println(tempString);
                 reverseString = "";
                 outputString = "";
                 for(i=0; i<tempLen; i++){
@@ -170,7 +170,7 @@ public class MessageUnblocking{
                         outputString = "";
                     }
                 }
-                System.out.println(reverseString);
+                //System.out.println(reverseString);
                 
                 BufferedWriter fWrite = new BufferedWriter(new FileWriter(unblockFile,true));
                 //Convert to ascii characters
@@ -209,7 +209,7 @@ public class MessageUnblocking{
                         //Write to file
                         int charValue = Integer.parseInt(resultString);
                         char asciiChar = (char) charValue;
-                        System.out.println(asciiChar);
+                        //System.out.println(asciiChar);
                         if(charValue != 0){
                             fWrite.write(asciiChar);
                         }

@@ -27,10 +27,10 @@ public class Decryption{
         eFile = new File(eName); //Encrypted File
         privateFile = new File(privateName);
         blockSize = block;
-        System.out.println("---Inside Decryption Class---");  //Test
+        //System.out.println("---Inside Decryption Class---");  //Test
         readXML();
         decrypt();
-        System.out.print("");  //Test
+        //System.out.print("");  //Test
     }
     
     //Read XML File
@@ -52,8 +52,8 @@ public class Decryption{
                     tempN = elementValue.getElementsByTagName("nvalue").item(0).getTextContent();
                     n = new HugeUnsignedInteger(tempN);
                     
-                    System.out.println("D: " + d.value);  //Test
-                    System.out.println("N: " + n.value);  //Test
+                    //System.out.println("D: " + d.value);  //Test
+                    //System.out.println("N: " + n.value);  //Test
                 }
             }
         }
@@ -88,50 +88,17 @@ public class Decryption{
             while((tempString = fRead2.readLine()) != null){
                 //Convert to HugeUnsignedInteger
                 //inputNumber = new HugeUnsignedInteger(tempString);
-                expVal = new HugeUnsignedInteger(tempString);
-                System.out.println("Decrpytion Input: " + tempString);  //Test
-                System.out.println("D: " + d.value);  //Test
-                System.out.println("N: " + n.value);  //Test
+                //System.out.println("Decrpytion Input: " + tempString);  //Test
+                //System.out.println("D: " + d.value);  //Test
+                //System.out.println("N: " + n.value);  //Test
+                
                 //C=M^d mod n
                 //P = C^x * (exp^2 % n)^d % n
+                expVal = new HugeUnsignedInteger(tempString);
                 fVal = new HugeUnsignedInteger("1");
                 dd = new HugeUnsignedInteger(d.value);
                 //System.out.println(d.value);
-                while(dd.equalTo(one) == 0){  //d != 1
-                    //          //Check if d value is even or odd
-                    //          if(d.modulus(two).equals("1")){  //Odd
-                    //            //c * c
-                    //            String cResult = fVal.multiplication(inputNumber);
-                    //            fVal = new HugeUnsignedInteger(cResult);
-                    //            //exp * exp
-                    //            String expResult = expVal.multiplication(expVal);
-                    //            expVal = new HugeUnsignedInteger(expResult);
-                    //            //exp % n
-                    //            expResult = expVal.modulus(n);
-                    //            expVal = new HugeUnsignedInteger(expResult);
-                    //            try{
-                    //            //d-1
-                    //              String newD = dd.subtraction(one);
-                    //              dd = new HugeUnsignedInteger(newD);
-                    //            }
-                    //            catch(SubtractionException ee){
-                    //              System.err.println(ee);
-                    //            }
-                    //          }
-                    //          else{  //Even
-                    //            //c * 1
-                    //            String cResult = fVal.multiplication(one);
-                    //            fVal = new HugeUnsignedInteger(cResult);
-                    //            //exp * exp
-                    //            String expResult = expVal.multiplication(expVal);
-                    //            expVal = new HugeUnsignedInteger(expResult);
-                    //            //exp % n
-                    //            expResult = expVal.modulus(n);
-                    //            expVal = new HugeUnsignedInteger(expResult);
-                    //          }
-                    //          String divideD = dd.division(two);
-                    //          dd = new HugeUnsignedInteger(divideD);
-                    
+                while(dd.equalTo(one) == 0){  //d != 1                   
                     if(dd.modulus(two).equals("1")){  //Odd
                         String fResult = fVal.multiplication(expVal);
                         fVal = new HugeUnsignedInteger(fResult);
@@ -145,24 +112,15 @@ public class Decryption{
                             System.err.println(ee);
                         }
                     }
-                    //exp * exp
-                    //System.out.println(expVal.value);
-                    //String expResult1 = expVal.multiplication(expVal);
                     expVal = new HugeUnsignedInteger(expVal.multiplication(expVal));
                     //exp % n
-                    //expResult1 = expVal.modulus(n);
                     expVal = new HugeUnsignedInteger(expVal.modulus(n));
-                    
-                    //String divideD = dd.division(two);
                     dd = new HugeUnsignedInteger(dd.division(two));
                 }
                 //When d is equal to 1
-                //System.out.println(fVal.value);
-                //String expResult = expVal.multiplication(fVal);
                 expVal = new HugeUnsignedInteger(expVal.multiplication(fVal));
-                //String resultVal = expVal.modulus(n);
                 outputNumber = new HugeUnsignedInteger(expVal.modulus(n));
-                System.out.println("Decryption Output: " + outputNumber.value);  //Test
+                //System.out.println("Decryption Output: " + outputNumber.value);  //Test
                 
                 //Insert leading zeros
                 String outputLen = outputNumber.value;

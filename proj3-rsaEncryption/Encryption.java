@@ -25,10 +25,10 @@ public class Encryption{
         bFile = new File(bName);
         eName = ePath.concat(".txt");
         eFile = new File(eName);
-        System.out.println("---Inside Encryption Class---");  //Test
+        //System.out.println("---Inside Encryption Class---");  //Test
         readXML();
         encrypt();
-        System.out.println("");  //Test
+        //System.out.println("");  //Test
     }
     
     //Read XML file
@@ -50,8 +50,8 @@ public class Encryption{
                     tempN = elementValue.getElementsByTagName("nvalue").item(0).getTextContent();
                     n = new HugeUnsignedInteger(tempN);
                     
-                    System.out.println("E: " + e.value);  //Test
-                    System.out.println("N: " + n.value);  //Test
+                    //System.out.println("E: " + e.value);  //Test
+                    //System.out.println("N: " + n.value);  //Test
                 }
             }
         }
@@ -97,7 +97,7 @@ public class Encryption{
                 //        }
                 
                 //Remove leading zero
-                System.out.println("Encryptioin Input: " + tempString);  //Test
+                //System.out.println("Encryptioin Input: " + tempString);  //Test
                 StringReader strRead = new StringReader(tempString);
                 //StringReader strRead = new StringReader(reverseString);
                 tempString2 = "";
@@ -121,7 +121,7 @@ public class Encryption{
                 if(tempString2.equals("")){
                     tempString2 = "0";
                 }
-                System.out.println("Remove 0s: " + tempString2);  //Test
+                //System.out.println("Remove 0s: " + tempString2);  //Test
                 
                 //Convert to HugeUnsignedInteger
                 inputNumber = new HugeUnsignedInteger(tempString2);
@@ -144,7 +144,7 @@ public class Encryption{
                   outputNumber = new HugeUnsignedInteger(resultString);
                 }
                 //Write to file
-                System.out.println("Encrpytion Output: " + outputNumber.value);  //Test
+                //System.out.println("Encrpytion Output: " + outputNumber.value);  //Test
                 fWrite.write(outputNumber.value);
                 fWrite.newLine();
             }
