@@ -6,16 +6,14 @@
 public class XY {
    int x_c;
    int y_c;
-  // boolean in_use;
    boolean piv;
-   XY(){
-     
+   
+   XY(){ 
    }
+   
    XY(int x, int y){
     x_c = x;
     y_c = y;
    }
   }
-
-  /* ADD YOUR CODE HERE */
 

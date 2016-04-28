@@ -35,7 +35,6 @@ class inner_gui extends JPanel{
   private Timer game_timer;
   private shape tetris_moving;
   public boolean game_over = false;  //Indicate when the game is over (stop spawning)
-  //private boolean spawn_ready = true;  //Indicate when to spawn the next tetromino
   private boolean action_ok = true;  //Can rotate or move tetris piece
   public boolean game_paused = false;  //Game pause state
   private int rand = -1;  //Set to -1 for initial state
@@ -46,7 +45,6 @@ class inner_gui extends JPanel{
   //Constructor
   public inner_gui(int width, int height){
     squares = new information[height][width];
-    //this.setSize(300,500);
     this.setLayout(new GridLayout(height,width));
     border = BorderFactory.createLineBorder(Color.BLACK,1);
     add_labels(width,height);
@@ -87,17 +85,12 @@ class inner_gui extends JPanel{
       //Update score if atleast one line is cleared
       int current_score = add_score(current_line_cleared, (int)current_level);
       total_score += current_score;
-      
-      System.out.println("Current Score: "+current_score);
-      System.out.println("Total Score: "+total_score);
-      //System.out.println("-------------------------------------");
             
       //spawn_ready = false;
       action_ok = true;
       //Randomize a shape (1 - 7)
       if(rand == -1){
       rand = (int)(Math.random() * 7 +1);
-      System.out.println("RANDOM NUMBER: "+rand);
       }
       shape new_tetris = new shape(rand);
       prev_rand = rand;  //Save previous rand vale for color
@@ -147,7 +140,6 @@ class inner_gui extends JPanel{
       }
       //If Game over
       else{
-        System.out.println("GAME OVER");
         JOptionPane.showMessageDialog(null, "Game Over");
       }
     }
@@ -315,7 +307,6 @@ class inner_gui extends JPanel{
         squares[i][j].setSize(500,500);
         squares[i][j].setBorder(border);
         squares[i][j].inused = false;  //Tetromino that is at the bottom -> static block (true)
-        //squares[i][j].moving_piece = false;
         this.add(squares[i][j]);
       }
     }
@@ -323,14 +314,9 @@ class inner_gui extends JPanel{
   
   //Timer
   private void timer(){
-    //tetris_moving = tetris_shape;
-    
     //Calculate the delay
     delay = (50 - (current_level * 2)) / 60;
-    //System.out.println(delay);
     delay = delay * 1000;  //Convert to milisecond
-    System.out.println("DELAY: "+delay);
-    System.out.println("-----------------------------------");
     
     //Set up timer with delay
     game_timer = new Timer((int)delay, new TimerHandler());
@@ -418,7 +404,6 @@ class inner_gui extends JPanel{
     public void keyPressed(KeyEvent e){
       //Left arrow key input
       if(e.getKeyCode() == KeyEvent.VK_LEFT){
-        //System.out.println("LEFT");
         boolean temp_state = true;
         
         //Get moving shape coordinate
@@ -472,7 +457,6 @@ class inner_gui extends JPanel{
       }
       //Right arrow key input
       else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-        //System.out.println("RIGHT");
         boolean temp_state = true;
         
         //Get moving shape coordinate
@@ -526,7 +510,6 @@ class inner_gui extends JPanel{
       }
       //Rotate Left
       else if(e.getKeyCode() == KeyEvent.VK_Z){
-        //System.out.println("ROTATE LEFT");
         boolean temp_state = true;
         boolean rotate_ok = true;
         XY[] prev_shape = tetris_moving.get_shape_cord();
@@ -559,9 +542,6 @@ class inner_gui extends JPanel{
           //Check for collision
           for(int i=0; i<shape_pos.length; i++){
             if(squares[shape_pos[i].y_c][shape_pos[i].x_c].inused == true){
-              //temp_state = false;
-              //game_timer.start();
-              //return;
               rotate_ok = false;
               temp_state = false;
             }
@@ -598,7 +578,6 @@ class inner_gui extends JPanel{
       }  //End of Rotate Left
       //Rotate Right
       else if(e.getKeyCode() == KeyEvent.VK_X){
-        //System.out.println("ROTATE RIGHT");
         boolean temp_state = true;
         boolean rotate_ok = true;
         XY[] prev_shape = tetris_moving.get_shape_cord();
@@ -630,9 +609,6 @@ class inner_gui extends JPanel{
           //Check for collision
           for(int i=0; i<shape_pos.length; i++){
             if(squares[shape_pos[i].y_c][shape_pos[i].x_c].inused == true){
-              //temp_state = false;
-              //game_timer.start();
-              //return;
               rotate_ok = false;
               temp_state = false;
             }
@@ -669,7 +645,6 @@ class inner_gui extends JPanel{
       } //End of Rotate Right
       //Hard Drop
       else if(e.getKeyCode() == KeyEvent.VK_SPACE){
-        //System.out.println("HARD DROP");
         boolean temp_state = true;
         XY[] prev_shape = tetris_moving.get_shape_cord();
         XY[] shape_pos;
@@ -732,7 +707,6 @@ class inner_gui extends JPanel{
       //Soft Drop
       else if(e.getKeyCode() == KeyEvent.VK_DOWN){
         game_timer.stop();
-        //System.out.println("SOFT DROP");
         boolean temp_state = true;
         boolean bottom_state = false;
         XY[] prev_shape = tetris_moving.get_shape_cord();

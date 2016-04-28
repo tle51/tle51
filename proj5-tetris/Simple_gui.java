@@ -6,11 +6,7 @@
 
 import java.awt.GridLayout;
 import java.awt.event.*;
-//import javax.swing.JLabel;
 import javax.swing.*;
-//import java.awt.Color;
-//import javax.swing.border.Border;
-//import java.io.*;
 import java.awt.*;
 
 public class Simple_gui extends JFrame{
@@ -56,7 +52,6 @@ public class Simple_gui extends JFrame{
     game_panel.setLayout(new BorderLayout());
     side_panel.setLayout(new BoxLayout(side_panel, BoxLayout.PAGE_AXIS));
     //Game panel
-    //game_gui = new inner_gui(width,height);
     game_gui.setFocusable(true);
     game_panel.add(game_gui, BorderLayout.CENTER);
     game_panel.setPreferredSize(new Dimension(280,500));
